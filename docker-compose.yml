@@ -1,0 +1,57 @@
+services:
+  coursework:
+    image: ${DOCKER_REGISTRY-}coursework
+    build:
+      context: .
+      dockerfile: course work/Dockerfile
+    container_name: app
+    depends_on: 
+      - postgres
+    networks:
+      - app-network
+  
+  # main postgres
+  postgres:
+    image: postgres
+    restart: always
+    # set shared memory limit when using docker-compose
+    shm_size: 128mb
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      # db name (no rus)
+      POSTGRES_DB: ${POSTGRES_DB}
+    container_name: postgres
+    networks:
+      - app-network
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - pg_main_postgres_backup:/backup # volume for save backups
+    
+  # test postgres
+  postgres_test:
+    image: postgres
+    restart: always
+    shm_size: 128mb
+    environment:
+      POSTGRES_USER: ${POSTGRES_TEST_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_TEST_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_TEST_DB}
+    container_name: postgres_test
+    networks:
+      - app-network
+    ports:
+      - "${POSTGRES_TEST_PORT}:5432" # another port for test db
+    volumes:
+      - pg_test_data:/var/lib/postgresql/data # another volume for test db
+      - pg_main_postgres_backup:/backup # same volume for save to restore backups
+
+networks:
+  app-network:
+
+volumes:
+  pg_data: # volume for main postgres
+  pg_test_data: # volume for test postgres
+  pg_main_postgres_backup: # the same volume for two postgres (test and main)
