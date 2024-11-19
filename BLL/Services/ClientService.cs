@@ -17,7 +17,7 @@ namespace BLL.Services
 
         public void Add(Client entity)
         {
-            throw new NotImplementedException();
+            // imp
         }
 
         public void Delete(Client entity)
