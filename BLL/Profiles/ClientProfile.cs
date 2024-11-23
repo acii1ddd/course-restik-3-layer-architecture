@@ -1,12 +1,14 @@
 ﻿using AutoMapper;
+using BLL.DTO;
+using DAL.Entities;
 
 namespace BLL.Profiles
 {
-    public class ClientProfile
+    public class ClientProfile : Profile
     {
         public ClientProfile()
         {
-            Createmap
+            CreateMap<Client, ClientDTO>().ReverseMap();
         }
     }
 }

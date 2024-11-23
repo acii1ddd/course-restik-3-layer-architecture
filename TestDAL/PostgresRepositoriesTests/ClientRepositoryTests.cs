@@ -14,18 +14,9 @@ namespace TestDAL.PostgresRepositoriesTests
 
         public ClientRepositoryTests()
         {
-            var config = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("testsettings.json", optional: false, reloadOnChange: true)
-                .Build();
-            // если null (в файле нет строки)
-            _testPostgresConnectionString = config.GetConnectionString("TestPostgres") ?? throw new InvalidOperationException("Строка подключения для TestPostgres не найдена в конфигурации.");
-
-            var services = new ServiceCollection();
-            services.ConfigureDAL(_testPostgresConnectionString);
-
-            ServiceProvider _serviceProvider = services.BuildServiceProvider();
-            _clientRepository = _serviceProvider.GetService<IClientRepository>() ?? throw new InvalidOperationException("Строка подключения для TestPostgres не найдена в конфигурации.");
+            // инициализация _testPostgresConnectionString внутри метода
+            var serviceProvider = Configuration.ConfigureTest(out _testPostgresConnectionString);
+            _clientRepository = serviceProvider.GetService<IClientRepository>() ?? throw new InvalidOperationException("Строка подключения для TestPostgres не найдена в конфигурации.");
         }
 
         /// <summary>
@@ -46,7 +37,7 @@ namespace TestDAL.PostgresRepositoriesTests
         }
 
         [Fact]
-        public void AddClient_ShouldAddClientToDb() // пока без async
+        public void AddClient_ShouldAddClient() // пока без async
         {
             ClearTable();
             // Id = 0
@@ -124,7 +115,7 @@ namespace TestDAL.PostgresRepositoriesTests
         }
 
         [Fact]
-        public void DeleteClient_ShouldDeleteClientFromDb()
+        public void DeleteClient_ShouldDeleteClient()
         {
             ClearTable();
             var client = new Client()
@@ -145,7 +136,7 @@ namespace TestDAL.PostgresRepositoriesTests
         }
 
         [Fact]
-        public void GetAllClients_ShouldReturnAllClientsFromDb()
+        public void GetAllClients_ShouldReturnAllClients()
         {
             ClearTable();
             var client1 = new Client()
@@ -186,7 +177,7 @@ namespace TestDAL.PostgresRepositoriesTests
         }
 
         [Fact]
-        public void UpdateClients_ShouldUpdateExistingClientInDb()
+        public void UpdateClients_ShouldUpdateExistingClient()
         {
             ClearTable();
             var client = new Client()

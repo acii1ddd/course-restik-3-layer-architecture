@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
+using BLL.DTO;
+using BLL.ServiceInterfaces;
 using DAL.Entities;
 using DAL.Interfaces;
 
 namespace BLL.Services
 {
-    public class ClientService : IClientRepository
+    public class ClientService : IClientService
     {
         private readonly IClientRepository _clientRepository;
         private readonly IMapper _mapper;
@@ -15,29 +17,42 @@ namespace BLL.Services
             _mapper = mapper;
         }
 
-        public void Add(Client entity)
+        public void Add(ClientDTO item)
         {
-            // imp
+            var client = _mapper.Map<Client>(item); // маппим к просто клиенту
+            _clientRepository.Add(client);
         }
 
-        public void Delete(Client entity)
+        public void DeleteById(int id)
         {
-            throw new NotImplementedException();
+            var client = _clientRepository.Get(id);
+            if (client != null)
+            {
+                _clientRepository.Delete(client);
+            }
         }
 
-        public Client? Get(int id)
+        public IEnumerable<ClientDTO> GetAll()
         {
-            throw new NotImplementedException();
+            var clients = _clientRepository.GetAll(); // взяли всх клиентов
+            return _mapper.Map<IEnumerable<ClientDTO>>(clients); // вернули dto-шки
         }
 
-        public IEnumerable<Client> GetAll()
+        public ClientDTO? GetById(int id)
         {
-            throw new NotImplementedException();
+            var client = _clientRepository.Get(id); // null либо Client
+            return client == null ? null : _mapper.Map<ClientDTO>(client);
         }
 
-        public void Update(Client entity)
+        public void Update(ClientDTO item)
         {
-            throw new NotImplementedException();
+            var client = _clientRepository.Get(item.Id); // старый
+            if (client != null)
+            {
+                // обновляем клиента из бд используя новый ClientDTO
+                _mapper.Map(item, client);
+                _clientRepository.Update(client); // обновляем новым клиентом
+            }
         }
     }
 }

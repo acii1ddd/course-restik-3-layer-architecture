@@ -4,31 +4,24 @@ using Npgsql;
 
 namespace DAL.PostgresRepositories
 {
-    internal class ClientRepository : IClientRepository
+    internal class RoleRepository : IRoleRepository
     {
-        private readonly string _connectionString; // можно изменить значение read-only переменной ни в каком другом методе, кроме конструктора
+        private readonly string _connectionString;
 
-        public ClientRepository(string connectionString)
+        public RoleRepository(string connectionString)
         {
-            _connectionString = connectionString;
+            this._connectionString = connectionString;
         }
 
-        /// <summary>
-        /// Добавляет клинета в таблицу clients 
-        /// и устанавливает его Id на основе autoincrement Id полученного из базы данных
-        /// </summary>
-        /// <param name="entity">Объект клиента, который нужно добавить</param>
-        public void Add(Client entity)
+        public void Add(Role entity)
         {
             using (var connection = new NpgsqlConnection(_connectionString))
             {
                 connection.Open();
-                var query = "INSERT INTO clients (login, password, name) values (@login, @password, @name) RETURNING id";
+                var query = "INSERT INTO roles (name) values (@name) RETURNING id";
 
                 using (var command = new NpgsqlCommand(query, connection))
                 {
-                    command.Parameters.AddWithValue("@login", entity.Login);
-                    command.Parameters.AddWithValue("@password", entity.Password);
                     command.Parameters.AddWithValue("@name", entity.Name);
 
                     var id = Convert.ToInt32(command.ExecuteScalar()); // так как returnings id
@@ -37,13 +30,13 @@ namespace DAL.PostgresRepositories
             }
         }
 
-        public void Delete(Client entity)
+        public void Delete(Role entity)
         {
             using (var connection = new NpgsqlConnection(_connectionString))
             {
                 connection.Open();
-                var query = "DELETE FROM clients WHERE id = @id";
-                
+                var query = "DELETE FROM roles WHERE id = @id";
+
                 using (var command = new NpgsqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@id", entity.Id);
@@ -52,12 +45,12 @@ namespace DAL.PostgresRepositories
             }
         }
 
-        public Client? Get(int id)
+        public Role? Get(int id)
         {
             using (var connection = new NpgsqlConnection(_connectionString))
             {
                 connection.Open();
-                var query = "SELECT id, login, password, name FROM clients WHERE id = @id";
+                var query = "SELECT id, name FROM roles WHERE id = @id";
 
                 using (var command = new NpgsqlCommand(query, connection))
                 {
@@ -67,12 +60,10 @@ namespace DAL.PostgresRepositories
                     {
                         if (reader.Read())
                         {
-                            return new Client
+                            return new Role
                             {
                                 Id = reader.GetInt32(0),
-                                Login = reader.GetString(1),
-                                Password = reader.GetString(2),
-                                Name = reader.GetString(3)
+                                Name = reader.GetString(1)
                             };
                         }
                     }
@@ -81,49 +72,42 @@ namespace DAL.PostgresRepositories
             return null; // если не найден
         }
 
-        public IEnumerable<Client> GetAll()
+        public IEnumerable<Role> GetAll()
         {
-            var clients = new List<Client>();
+            var roles = new List<Role>();
 
             using (var connection = new NpgsqlConnection(_connectionString))
             {
                 connection.Open();
-                var query = "SELECT * FROM clients";
+                var query = "SELECT * FROM roles";
                 using (var command = new NpgsqlCommand(query, connection))
                 {
                     using (var reader = command.ExecuteReader())
                     {
                         while (reader.Read())
                         {
-                            clients.Add(new Client
+                            roles.Add(new Role
                             {
                                 Id = reader.GetInt32(0),
-                                Login = reader.GetString(1),
-                                Password = reader.GetString(2),
-                                Name = reader.GetString(3)
+                                Name = reader.GetString(1)
                             });
                         }
                     }
                 }
-                return clients; // пустой список new List<Client>(), либо список клиентов
+                return roles; // пустой список new List<Role>(), либо список клиентов
             }
         }
 
-        // принимает новую сущность и обновляет с ее помощью старую (с таким же id)
-        public void Update(Client entity)
+        public void Update(Role entity)
         {
             using (var connection = new NpgsqlConnection(_connectionString))
             {
                 connection.Open();
-                var query = "UPDATE clients SET " +
-                            "login = @login, " +
-                            "password = @password, " +
+                var query = "UPDATE roles SET " +
                             "name = @name " +
                             "WHERE id = @id";
                 using (var command = new NpgsqlCommand(query, connection))
                 {
-                    command.Parameters.AddWithValue("@login", entity.Login);
-                    command.Parameters.AddWithValue("@password", entity.Password);
                     command.Parameters.AddWithValue("@name", entity.Name);
                     command.Parameters.AddWithValue("@id", entity.Id);
 
