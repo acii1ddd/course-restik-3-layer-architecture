@@ -80,6 +80,7 @@ namespace TestDAL.PostgresRepositoriesTests
                     }
                 }
             }
+            ClearTable();
         }
 
         [Fact]
@@ -112,6 +113,7 @@ namespace TestDAL.PostgresRepositoriesTests
             Assert.Equal(client.Login, receivedClient.Login);
             Assert.Equal(client.Password, receivedClient.Password);
             Assert.Equal(client.Name, receivedClient.Name);
+            ClearTable();
         }
 
         [Fact]
@@ -133,6 +135,7 @@ namespace TestDAL.PostgresRepositoriesTests
             // Assert
             var deletedClient = _clientRepository.Get(client.Id);
             Assert.Null(deletedClient);
+            ClearTable();
         }
 
         [Fact]
@@ -174,10 +177,11 @@ namespace TestDAL.PostgresRepositoriesTests
 
             Assert.Contains(clients, c => c.Login == client1.Login);
             Assert.Contains(clients, c => c.Login == client2.Login);
+            ClearTable();
         }
 
         [Fact]
-        public void UpdateClients_ShouldUpdateExistingClient()
+        public void UpdateClient_ShouldUpdateExistingClient()
         {
             ClearTable();
             var client = new Client()
@@ -203,6 +207,39 @@ namespace TestDAL.PostgresRepositoriesTests
             Assert.Equal(updatedClient.Login, client.Login);
             Assert.Equal(updatedClient.Password, client.Password);
             Assert.Equal(updatedClient.Name, client.Name);
+            ClearTable();
+        }
+
+        [Fact]
+        public void GetClientByLogin_ReturnsClientOrNULL()
+        {
+            ClearTable();
+            var client = new Client()
+            {
+                Login = "test_getBylogin_login",
+                Password = "test_getBylogin_pass",
+                Name = "test_getBylogin_name"
+            };
+
+            // нет клиента с таким логином
+            // Act 1
+            var receivedClient = _clientRepository.GetByLogin(client.Login);
+
+            // Assert
+            Assert.Null(receivedClient);
+
+            // есть клиент с таким логином
+            _clientRepository.Add(client);
+
+            // Act 2
+            receivedClient = _clientRepository.GetByLogin(client.Login);
+
+            // Assert
+            Assert.NotNull(receivedClient);
+            Assert.Equal(receivedClient.Login, client.Login);
+            Assert.Equal(receivedClient.Password, client.Password);
+            Assert.Equal(receivedClient.Name, client.Name);
+            ClearTable();
         }
     }
 }

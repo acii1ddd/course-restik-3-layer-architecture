@@ -1,5 +1,8 @@
 ﻿using BLL.Configuration;
+using BLL.DTO;
 using BLL.ServiceInterfaces;
+using course_work.Handlers;
+using DAL.Entities;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -19,48 +22,88 @@ namespace course_work
             var services = new ServiceCollection();
             services.ConfigureBLL(postgresConnection);
 
-
-
             // получаем сервис для работы с клиентами
             var provider = services.BuildServiceProvider();
-            var clientService = provider.GetService<IClientService>();
 
-            var allClients = clientService.GetAll().ToList();
-            if (allClients.Count != 0)
+            //// сервис для работы с сотрудниками
+            //var roleService = provider.GetService<IRoleService>();
+            //var roles = roleService.GetAll().ToList();
+            //for (int i = 0; i < roles.Count; i++)
+            //{
+            //    Console.WriteLine($"id:{roles[i].Id};name:{roles[i].Name}");
+            //}
+
+            //var workerService = provider.GetService<IWorkerService>();
+            //var workers = workerService.GetAll().ToList();
+            //Console.WriteLine();
+            //if (workers.Count != 0)
+            //{
+            //    for (int i = 0; i < workers.Count; i++)
+            //    {
+            //        Console.WriteLine($"id:{workers[i].Id};role_id:{workers[i].RoleId};login:{workers[i].Login}" +
+            //            $";phone:{workers[i].PhoneNumber};hire_date:{workers[i].HireDate};full_name:{workers[i].FullName}");
+            //    }
+            //}
+
+            Console.WriteLine("Введите логин: ");
+            string login = Console.ReadLine();
+
+            Console.WriteLine("Введите пароль: ");
+            string password = Console.ReadLine();
+
+            var authService = provider.GetService<IAuthService>();
+            var authResult = authService.AuthUser(login, password);
+
+            if (authResult == null)
             {
-                for (int i = 0; i < allClients.Count; i++)
-                {
-                    Console.WriteLine(allClients[i].Login + " " + allClients[i].Name);
-                }
+                Console.WriteLine("Неверный логин или пароль.");
+                return;
             }
-            else
-            {
-                Console.WriteLine("Нет клиентов");
-            }
-            Console.WriteLine();
+            // вошел клиент
+            //else if (authResult is ClientDTO client)
+            //{
+            //    Console.WriteLine($"Добро пожаловать, {client.Name}!");
+            //    Console.WriteLine($"Вы клиент!!!");
+            //    Console.WriteLine($"Ваш логин: {client.Login}!");
 
-            // сервис для работы с сотрудниками
-            var roleService = provider.GetService<IRoleService>();
-            var roles = roleService.GetAll().ToList();
-            for (int i = 0; i < roles.Count; i++)
-            {
-                Console.WriteLine($"id:{roles[i].Id};name:{roles[i].Name}");
-            }
+            //    // mainMenu для показа его функций
+            //    Console.WriteLine($"\n\nВаше меню:");
 
-            // аунтефикация
-            // 
-            /// 
-            /// идем в таблицу clietns с логином 
-            /// идем в таблицу workers с логином 
-
-            // авторизация
-            /// если нашли в workers то можем получить роль соррудника
-            ///
-            /// dto c сервиса Auth (у Worker есть поле RoleId) 
-            /// по RoleId в roleService.Get(roleId) -> string -> роль залогинившегося сотрудника
-            
+            //    // потом вызвать выбранную функцию из ClientService
+            //}
+            //// вошел работник
+            //else if (authResult is WorkerDTO worker)
+            //{
+            //    var roleService = provider.GetService<IRoleService>();
+            //    string currRole = roleService.GetById(worker.RoleId).Name;
+            //    if (currRole != null)
+            //    {
+            //        Console.WriteLine($"Добро пожаловать, {worker.FullName}!");
+            //        Console.WriteLine($"Должность: {worker.RoleId}, Логин: {worker.Login} Телефон: {worker.PhoneNumber}, Дата найма: {worker.HireDate}");
+            //        if (currRole == "waiter")
+            //        {
+            //            Console.WriteLine("Вы официант");
+            //            // вызвать mainMenu для показа его функций
+            //            // потом вызвать выбранную функцию из WaiterService
+            //        }
+            //        if (currRole == "cook")
+            //        {
+            //            Console.WriteLine("Вы повар");
+            //            // вызвать mainMenu для показа его функций
+            //            // потом вызвать выбранную функцию из CookService
+            //        }
+            //        if (currRole == "admin")
+            //        {
+            //            Console.WriteLine("Вы администратор");
+            //            // вызвать mainMenu для показа его функций
+            //            // потом вызвать выбранную функцию из AdminService
+            //        }
+            //    }
+            //}
 
             //Console.WriteLine(postgresConnection);
+
+            UserHandler.HandleUserRole(authResult, provider);
         }
     }
 }

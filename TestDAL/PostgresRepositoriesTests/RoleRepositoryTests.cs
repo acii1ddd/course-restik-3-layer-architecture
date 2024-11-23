@@ -71,6 +71,7 @@ namespace TestDAL.PostgresRepositoriesTests
                     }
                 }
             }
+            ClearTable();
         }
 
         [Fact]
@@ -97,6 +98,7 @@ namespace TestDAL.PostgresRepositoriesTests
             // Assert
             Assert.NotNull(receivedRole);
             Assert.Equal(role.Name, receivedRole.Name);
+            ClearTable();
         }
 
         [Fact]
@@ -116,6 +118,7 @@ namespace TestDAL.PostgresRepositoriesTests
             // Assert
             var deletedClient = _roleRepository.Get(role.Id);
             Assert.Null(deletedClient);
+            ClearTable();
         }
 
         [Fact]
@@ -153,10 +156,11 @@ namespace TestDAL.PostgresRepositoriesTests
 
             Assert.Contains(roles, c => c.Name == role1.Name);
             Assert.Contains(roles, c => c.Name == role2.Name);
+            ClearTable();
         }
 
         [Fact]
-        public void UpdateClients_ShouldUpdateExistingClient()
+        public void UpdateRole_ShouldUpdateExistingRole()
         {
             ClearTable();
             var role = new Role()
@@ -175,6 +179,7 @@ namespace TestDAL.PostgresRepositoriesTests
             var updatedClient = _roleRepository.Get(role.Id);
             Assert.NotNull(updatedClient);
             Assert.Equal(updatedClient.Name, role.Name);
+            ClearTable();
         }
     }
 }

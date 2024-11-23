@@ -2,7 +2,7 @@
 
 namespace BLL.DTO
 {
-    public class WorkerDTO : IDTO
+    public class WorkerDTO : IDTO, IUserDTO
     {
         public int Id { get; set; }
 
@@ -12,7 +12,7 @@ namespace BLL.DTO
 
         public string PhoneNumber { get; set; } = string.Empty;
 
-        public DateOnly HireDate { get; set; } = new DateOnly();
+        public DateTime? HireDate { get; set; } = new DateTime();
 
         public string FullName { get; set; } = string.Empty;
     }

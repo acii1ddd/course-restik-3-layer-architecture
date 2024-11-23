@@ -15,12 +15,16 @@ namespace BLL.Configuration
 
             //профили
             services.AddAutoMapper(
-                typeof(ClientProfile)
+                typeof(ClientProfile),
+                typeof(RoleProfile),
+                typeof(WorkerProfile)
             );
 
             // сервисы
             services.AddTransient<IClientService, ClientService>(); // с клиентами работает clientService
             services.AddTransient<IRoleService, RoleService>();
+            services.AddTransient<IWorkerService, WorkerService>();
+            services.AddTransient<IAuthService, AuthService>();
         }
     }
 }

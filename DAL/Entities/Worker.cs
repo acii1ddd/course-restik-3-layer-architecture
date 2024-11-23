@@ -12,7 +12,7 @@
 
         public string PhoneNumber { get; set; } = string.Empty;
 
-        public DateOnly HireDate { get; set; } = new DateOnly();
+        public DateTime? HireDate { get; set; } = DateTime.Now.Date; // optional, current date by default
 
         public string FullName { get; set; } = string.Empty;
     }

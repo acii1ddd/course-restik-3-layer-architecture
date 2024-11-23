@@ -8,7 +8,7 @@
 
         void DeleteById(int id);
 
-        T GetById(int id);
+        T? GetById(int id);
 
         IEnumerable<T> GetAll();
     }

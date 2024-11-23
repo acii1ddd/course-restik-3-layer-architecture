@@ -2,7 +2,7 @@
 
 namespace BLL.DTO
 {
-    public class ClientDTO : IDTO
+    public class ClientDTO : IDTO, IUserDTO
     {
         public int Id { get; set; }
 

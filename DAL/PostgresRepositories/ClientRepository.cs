@@ -109,6 +109,35 @@ namespace DAL.PostgresRepositories
             }
         }
 
+        public Client? GetByLogin(string login)
+        {
+            using (var connection = new NpgsqlConnection(_connectionString))
+            {
+                connection.Open();
+                var query = "SELECT * FROM clients WHERE login = @login";
+
+                using (var command = new NpgsqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@login", login);
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return new Client
+                            {
+                                Id = reader.GetInt32(0),
+                                Login = reader.GetString(1),
+                                Password = reader.GetString(2),
+                                Name = reader.GetString(3)
+                            };
+                        }
+                    }
+                }
+            }
+            return null; // если не найден
+        }
+
         // принимает новую сущность и обновляет с ее помощью старую (с таким же id)
         public void Update(Client entity)
         {
