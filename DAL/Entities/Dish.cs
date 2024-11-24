@@ -1,4 +1,5 @@
-﻿namespace DAL.Entities
+﻿
+namespace DAL.Entities
 {
     public class Dish
     {

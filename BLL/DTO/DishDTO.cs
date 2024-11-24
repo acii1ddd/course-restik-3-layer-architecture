@@ -11,5 +11,16 @@ namespace BLL.DTO
         public decimal Price { get; set; }
 
         public bool IsAvailable { get; set; }
+
+        public override bool Equals(object? obj)
+        {
+            return obj is DishDTO dTO &&
+                   Id == dTO.Id;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Id);
+        }
     }
 }
