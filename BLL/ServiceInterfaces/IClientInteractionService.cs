@@ -4,9 +4,9 @@ namespace BLL.ServiceInterfaces
 {
     public interface IClientInteractionService
     {
-        void GetAvailableDishes();
+        IEnumerable<DishDTO> GetAvailableDishes();
 
-        void CreateOrder();
+        void MakeOrder(Dictionary<DishDTO, int> selectedDishes, ClientDTO clientId, int tableNumber);
 
         OrderDTO GetOrderStatus(int orderId);
     }

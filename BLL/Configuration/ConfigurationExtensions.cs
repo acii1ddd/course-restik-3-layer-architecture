@@ -2,7 +2,6 @@
 using BLL.ServiceInterfaces;
 using BLL.Services;
 using DAL.Configuration;
-using DAL.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BLL.Configuration
@@ -17,7 +16,10 @@ namespace BLL.Configuration
             services.AddAutoMapper(
                 typeof(ClientProfile),
                 typeof(RoleProfile),
-                typeof(WorkerProfile)
+                typeof(WorkerProfile),
+                typeof(DishProfile),
+                typeof(OrderProfile),
+                typeof(OrderItemProfile)
             );
 
             // сервисы
@@ -25,6 +27,7 @@ namespace BLL.Configuration
             services.AddTransient<IRoleService, RoleService>();
             services.AddTransient<IWorkerService, WorkerService>();
             services.AddTransient<IAuthService, AuthService>();
+            services.AddTransient<IClientInteractionService, ClientInteractionService>();
         }
     }
 }
