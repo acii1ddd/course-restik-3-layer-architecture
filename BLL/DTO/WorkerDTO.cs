@@ -12,7 +12,7 @@ namespace BLL.DTO
 
         public string PhoneNumber { get; set; } = string.Empty;
 
-        public DateTime? HireDate { get; set; } = new DateTime();
+        public DateTime HireDate { get; set; } = new DateTime();
 
         public string FullName { get; set; } = string.Empty;
     }

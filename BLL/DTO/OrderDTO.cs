@@ -1,12 +1,15 @@
-﻿namespace DAL.Entities
+﻿using BLL.ServiceInterfaces;
+using DAL.Entities;
+
+namespace BLL.DTO
 {
-    public class Order
+    public class OrderDTO : IDTO
     {
         public int Id { get; set; }
 
         public int ClientId { get; set; }
 
-        public DateTime Date { get; set; } = DateTime.Now;
+        public DateTime Date { get; set; } = new DateTime();
 
         public decimal? TotalCost { get; set; } // триггер
 
@@ -19,21 +22,5 @@
         public int? CookId { get; set; }
 
         public int TableNumber { get; set; }
-    }
-
-    public enum OrderStatus
-    {
-        InProcessing,
-        IsCooking,
-        Cooked,
-        InDelivery,
-        Delivered,
-        Completed
-    }
-
-    public enum PaymentStatus
-    {
-        Unpaid,
-        Paid
     }
 }

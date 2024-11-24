@@ -45,10 +45,10 @@ namespace course_work
             //    }
             //}
 
-            Console.WriteLine("Введите логин: ");
+            Console.Write("Введите логин: ");
             string login = Console.ReadLine();
 
-            Console.WriteLine("Введите пароль: ");
+            Console.Write("Введите пароль: ");
             string password = Console.ReadLine();
 
             var authService = provider.GetService<IAuthService>();

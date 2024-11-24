@@ -8,40 +8,43 @@ namespace course_work.Handlers
     public class ClientHandler
     {
         private readonly IClientService _clientService;
+        private readonly ClientView _clientView;
 
         public ClientHandler(IServiceProvider provider)
         {
             _clientService = provider.GetService<IClientService>() ?? throw new ArgumentNullException();
+            _clientView = new ClientView();
         }
 
         public void HandleClient(ClientDTO client)
         {
-            Console.WriteLine($"Добро пожаловать, {client.Name}!");
+            Console.WriteLine($"\nДобро пожаловать, {client.Name}!");
 
-            // mainMenu для показа его функций
-            var view = new ClientView();
-            view.ShowMenu();
-            // выбор клиент
-            var input = (Console.ReadLine());
-
-            if (int.TryParse(input, out int choice)) // input парсится к int
+            // Menu с функционалом
+            _clientView.ShowMenu();
+            
+            // выбор клиента
+            if (int.TryParse(Console.ReadLine(), out int choice)) // input парсится к int
             {
                 switch (choice)
                 {
                     case 1:
-                        // Просмотр меню блюд
+                        Console.WriteLine("Просмотр меню блюд");
                         //_clientService.
                         break;
                     case 2:
-                        //Совершение заказа
+                        Console.Write("Введите номер столика для заказа: ");
+                        Console.ReadLine();
+                        // проверка на число
+
                         //_clientService.
                         break;
                     case 3:
-                        //Просмотр статуса заказа
+                        Console.WriteLine("Просмотр статуса заказа");
                         //_clientService.
                         break;
                     default:
-                        Console.WriteLine("Выберите корректно.");
+                        Console.WriteLine("Выберите корректный номер.");
                         break;
                 }
             }

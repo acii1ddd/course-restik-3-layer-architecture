@@ -11,6 +11,9 @@ namespace DAL.Configuration
             services.AddScoped<IClientRepository>(provider => new ClientRepository(connection));
             services.AddScoped<IRoleRepository>(provider => new RoleRepository(connection));
             services.AddScoped<IWorkerRepository>(provider => new WorkerRepository(connection));
+            services.AddScoped<IDishRepository>(provider => new DishRepository(connection));
+            services.AddScoped<IOrderRepository>(provider => new OrderRepository(connection));
+            services.AddScoped<IOrderItemRepository>(provider => new OrderItemRepository(connection));
         }
     }
 }

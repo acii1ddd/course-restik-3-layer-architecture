@@ -2,7 +2,6 @@
 using DAL.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
-using System.Xml.Linq;
 
 namespace TestDAL.PostgresRepositoriesTests
 {
@@ -105,13 +104,13 @@ namespace TestDAL.PostgresRepositoriesTests
 
                     using (var reader = command.ExecuteReader())
                     {
-                        // true если reader вернет true, исключение с сообщением "Role not found in database." - если false
+                        // true если reader вернет true, исключение с сообщением "Worker not found in database." - если false
                         Assert.True(reader.Read(), "Role not found in database."); // проверка reader на true/false
                         Assert.Equal(worker.RoleId, reader["role_id"]);
                         Assert.Equal(worker.Login, reader["login"]);
                         Assert.Equal(worker.Password, reader["password"]);
                         Assert.Equal(worker.PhoneNumber, reader["phone_number"]);
-                        Assert.Equal(DateTime.Now.Date, reader["hire_date"]); // текущая дата дается в бд
+                        Assert.Equal(DateTime.UtcNow.Date, reader["hire_date"]); // текущая дата дается в бд
                         Assert.Equal(worker.FullName, reader["full_name"]);
                     }
                 }
@@ -152,7 +151,7 @@ namespace TestDAL.PostgresRepositoriesTests
             Assert.Equal(worker.Login, receivedWorker.Login);
             Assert.Equal(worker.Password, receivedWorker.Password);
             Assert.Equal(worker.PhoneNumber, receivedWorker.PhoneNumber);
-            Assert.Equal(DateTime.Now.Date, receivedWorker.HireDate); // текущая дата из базы данных
+            Assert.Equal(DateTime.UtcNow.Date, receivedWorker.HireDate); // текущая дата из базы данных
             Assert.Equal(worker.FullName, receivedWorker.FullName);
             ClearTable();
             ClearTableRoles();
@@ -293,7 +292,7 @@ namespace TestDAL.PostgresRepositoriesTests
             Assert.Equal(receivedWorker.Login, worker.Login);
             Assert.Equal(receivedWorker.Password, worker.Password);
             Assert.Equal(receivedWorker.PhoneNumber, worker.PhoneNumber);
-            Assert.Equal(receivedWorker.HireDate, DateTime.Now.Date);
+            Assert.Equal(receivedWorker.HireDate, DateTime.UtcNow.Date);
             Assert.Equal(receivedWorker.FullName, worker.FullName);
             
             ClearTable();
