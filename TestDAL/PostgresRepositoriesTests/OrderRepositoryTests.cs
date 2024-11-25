@@ -95,7 +95,7 @@ namespace TestDAL.PostgresRepositoriesTests
             ShureClientExists(1, "TestClient1", "testPass", "testName");
 
             // Id = 0
-            var order = new Order
+            var order = new Order // локальное время по умолчанию в date
             {
                 ClientId = 1,
                 TableNumber = 4,
@@ -129,7 +129,7 @@ namespace TestDAL.PostgresRepositoriesTests
                         Assert.True(reader.Read(), "Order not found in database."); // проверка reader на true/false
                         Assert.Equal(order.ClientId, reader["client_id"]);
                         // сравниваем только дату (хотя в бд - timestamp
-                        Assert.Equal(DateTime.UtcNow.Date, ((DateTime)reader["date"]).Date); // в базе данных TimeStamp 
+                        Assert.Equal(DateTime.UtcNow.Date, ((DateTime)reader["date"]).Date); // в базе данных TimeStamp
 
                         // индекс столбца total_cost
                         var costIndex = reader.GetOrdinal("total_cost");

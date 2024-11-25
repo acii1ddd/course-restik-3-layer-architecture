@@ -1,4 +1,4 @@
-﻿namespace BLL.ServiceInterfaces
+﻿namespace BLL.ServiceInterfaces.LogicInterfaces
 {
     public interface IWaiterService
     {

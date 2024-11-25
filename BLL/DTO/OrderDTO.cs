@@ -1,4 +1,4 @@
-﻿using BLL.ServiceInterfaces;
+﻿using BLL.ServiceInterfaces.DTOs;
 using DAL.Entities;
 
 namespace BLL.DTO

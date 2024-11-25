@@ -1,6 +1,7 @@
 ﻿using BLL.DTO;
+using BLL.ServiceInterfaces.DTOs;
 
-namespace BLL.ServiceInterfaces
+namespace BLL.ServiceInterfaces.LogicInterfaces
 {
     public interface IAuthService
     {

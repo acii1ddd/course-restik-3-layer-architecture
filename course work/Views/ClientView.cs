@@ -31,34 +31,43 @@ namespace course_work.Views
             }
         }
 
+        private enum DishIdInputStatus
+        {
+            Finished = -2,
+            Invalid = -1
+        }
+
         private int GetDishId(int maxDishesCount)
         {
             Console.Write("\nВведите номер блюда (или нажмите Enter для завершения): ");
             var input = Console.ReadLine();
             if (string.IsNullOrEmpty(input))
             {
-                return -2; // закончил ввод
+                return (int)DishIdInputStatus.Finished; // закончил ввод
             }
-
+            
+            // text
             if (!int.TryParse(input, out int dishId))
             {
                 Console.WriteLine("Некорректный номер блюда. Повторите ввод.");
-                return -1;
+                return (int)DishIdInputStatus.Invalid;
             }
 
-            if (dishId > maxDishesCount|| dishId <= 0)
+            if (dishId > maxDishesCount || dishId <= 0)
             {
                 Console.Write("Нет такого блюда в меню.\n");
-                return -1;
+                return (int)DishIdInputStatus.Invalid;
             }
             return dishId - 1; // индекс массива с 0
         }
 
         public int GetDishQuantity()
         {
-            Console.Write("Введите количество блюда: ");
-            int quantity = Validator.GetValidInteger("Введите корректное количество:");
-            return quantity;
+            return Validator.GetValidInteger(
+                "Введите количество блюда: ",
+                "Количество должно быть больше 0. Повторите ввод.\n",
+                dishId => dishId > 0
+            );
         }
 
         public Dictionary<DishDTO, int> GetSelectedDishes(List<DishDTO> availableDishes)
@@ -68,25 +77,19 @@ namespace course_work.Views
             do
             {
                 int dishId = GetDishId(availableDishes.Count);
-                if (dishId == -2)
+                if (dishId == (int)DishIdInputStatus.Finished)
                 {
                     break; // клиент закончил ввод
                 }
-                if (dishId == -1)
+                if (dishId == (int)DishIdInputStatus.Invalid)
                 {
                     continue;
                 }
+
                 // блюдо для добавления
                 var dish = availableDishes.ToList()[dishId];
                 // если количество
                 int quantity = GetDishQuantity();
-
-                if (quantity <= 0)
-                {
-                    Console.WriteLine("Количество должно быть больше 0. Повторите ввод.");
-                    continue;
-                }
-
 
                 if (selectedDishes.ContainsKey(dish))
                 {

@@ -1,5 +1,5 @@
 ﻿using BLL.DTO;
-using BLL.ServiceInterfaces;
+using BLL.ServiceInterfaces.LogicInterfaces;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace course_work.Handlers

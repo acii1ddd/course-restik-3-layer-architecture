@@ -1,5 +1,5 @@
 ﻿using BLL.Configuration;
-using BLL.ServiceInterfaces;
+using BLL.ServiceInterfaces.LogicInterfaces;
 using course_work.Handlers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

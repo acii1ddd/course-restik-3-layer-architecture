@@ -6,7 +6,7 @@ using DAL.Interfaces;
 
 namespace BLL.Services
 {
-    public class RoleService : IRoleService
+    internal class RoleService : IRoleService
     {
         private readonly IRoleRepository _roleRepository;
         private readonly IMapper _mapper;

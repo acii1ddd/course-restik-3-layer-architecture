@@ -1,5 +1,5 @@
 ﻿using BLL.DTO;
-using BLL.ServiceInterfaces;
+using BLL.ServiceInterfaces.DTOs;
 
 namespace course_work.Handlers
 {

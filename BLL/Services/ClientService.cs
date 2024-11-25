@@ -6,7 +6,7 @@ using DAL.Interfaces;
 
 namespace BLL.Services
 {
-    public class ClientService : IClientService
+    internal class ClientService : IClientService
     {
         private readonly IClientRepository _clientRepository;
         private readonly IMapper _mapper;

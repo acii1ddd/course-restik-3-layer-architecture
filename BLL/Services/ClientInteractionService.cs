@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BLL.DTO;
 using BLL.ServiceInterfaces;
+using BLL.ServiceInterfaces.ValidatorsInterfaces;
 using DAL.Entities;
 using DAL.Interfaces;
 
@@ -12,50 +13,52 @@ namespace BLL.Services
         private readonly IOrderRepository _orderRepository;
         private readonly IOrderItemRepository _orderItemRepository;
         private readonly IMapper _mapper;
+        
+        private readonly IOrderValidatorService _orderValidator;
 
-        public ClientInteractionService(IDishRepository dishRepository, IOrderRepository orderRepository, IOrderItemRepository orderItemRepository, IMapper mapper)
+        public ClientInteractionService(IDishRepository dishRepository, IOrderRepository orderRepository, IOrderItemRepository orderItemRepository, IMapper mapper, IOrderValidatorService orderValidator)
         {
             _dishRepository = dishRepository;
             _orderRepository = orderRepository;
             _orderItemRepository = orderItemRepository;
             _mapper = mapper;
+            _orderValidator = orderValidator;
         }
 
         public void MakeOrder(Dictionary<DishDTO, int> selectedDishes, ClientDTO clientId, int tableNumber)
         {
-            if (selectedDishes == null || selectedDishes.Count == 0 || clientId.Id <= 0)
+            try
             {
-                return;
+                _orderValidator.IsOrderValid(selectedDishes, clientId, tableNumber);
+                
+                // если заказ валиден для создания - добавляем его в бд
+                var order = new Order
+                {
+                    ClientId = clientId.Id,
+                    TableNumber = tableNumber
+                };
+                _orderRepository.Add(order);
+
+                
+                // total_cost в объекте order не обновляется в программе (в бд подсчитывается триггером)
+
+
+                foreach (var selectedDish in selectedDishes)
+                {
+                    var dish = _mapper.Map<Dish>(selectedDish.Key); // выбранное блюдо
+                    int quantity = selectedDish.Value; // quantity
+                    _orderItemRepository.Add(new OrderItem
+                    {
+                        OrderId = order.Id, // id созданного для клиента заказа
+                        DishId = dish.Id,
+                        Quantity = quantity,
+                        CurrDishPrice = dish.Price
+                    });
+                }
             }
-            // создаем заказ для клиента (без блюд пока что)
-            var order = new Order
+            catch (Exception)
             {
-                ClientId = clientId.Id,
-                TableNumber = tableNumber
-            };
-            _orderRepository.Add(order);
-
-            foreach (var selectedDish in selectedDishes)
-            {
-                var dish = _mapper.Map<Dish>(selectedDish.Key); // выбранное блюдо
-                int quantity = selectedDish.Value; // quantity
-
-                if (quantity <= 0)
-                {
-                    continue;
-                }
-                if (!_dishRepository.GetAll().ToList().Any(d => d.Id == dish.Id)) // есть ли блюдо с нужным id в бд
-                {
-                    continue;
-                }
-
-                _orderItemRepository.Add(new OrderItem
-                {
-                    OrderId = order.Id, // id созданного для клиента заказа
-                    DishId = dish.Id,
-                    Quantity = quantity,
-                    CurrDishPrice = dish.Price
-                });
+                throw;
             }
         }
 

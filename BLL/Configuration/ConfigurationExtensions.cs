@@ -1,6 +1,9 @@
 ﻿using BLL.Profiles;
 using BLL.ServiceInterfaces;
+using BLL.ServiceInterfaces.LogicInterfaces;
+using BLL.ServiceInterfaces.ValidatorsInterfaces;
 using BLL.Services;
+using BLL.Services.Validators;
 using DAL.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -28,6 +31,9 @@ namespace BLL.Configuration
             services.AddTransient<IWorkerService, WorkerService>();
             services.AddTransient<IAuthService, AuthService>();
             services.AddTransient<IClientInteractionService, ClientInteractionService>();
+
+            // validators
+            services.AddTransient<IOrderValidatorService, OrderValidatorService>();
         }
     }
 }

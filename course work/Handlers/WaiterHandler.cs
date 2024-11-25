@@ -1,6 +1,6 @@
 ﻿using BLL.DTO;
 using Microsoft.Extensions.DependencyInjection;
-using BLL.ServiceInterfaces;
+using BLL.ServiceInterfaces.LogicInterfaces;
 
 namespace course_work.Handlers
 {

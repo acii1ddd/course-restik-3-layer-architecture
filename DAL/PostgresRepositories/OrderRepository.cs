@@ -19,15 +19,22 @@ namespace DAL.PostgresRepositories
             {
                 connection.Open();
                 var query = "INSERT INTO orders (client_id, table_number) " +
-                    "values (@client_id, @table_number) RETURNING id";
+                    "values (@client_id, @table_number) RETURNING id, date";
 
                 using (var command = new NpgsqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@client_id", entity.ClientId);
                     command.Parameters.AddWithValue("@table_number", entity.TableNumber);
 
-                    var id = Convert.ToInt32(command.ExecuteScalar()); // так как returnings id
-                    entity.Id = id; // id в бд соответствует id объекта
+                    using (var reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            entity.Id = reader.GetInt32(0); // id в бд соответствует id объекта (так как returnings id)
+                            DateTime utcDate = reader.GetDateTime(1); // в бд хранится utc время
+                            entity.Date = utcDate.ToLocalTime(); // преобразуем в локальное время
+                        }
+                    }
                 }
             }
         }
@@ -66,7 +73,7 @@ namespace DAL.PostgresRepositories
                             {
                                 Id = reader.GetInt32(0),
                                 ClientId = reader.GetInt32(1),
-                                Date = reader.GetDateTime(2),
+                                Date = reader.GetDateTime(2), // мб конверт из utc к локальной дате
                                 TotalCost = reader.IsDBNull(3) ? null : reader.GetDecimal(3),
                                 Status = Enum.Parse<OrderStatus>(reader.GetString(4)), // enum status
                                 PaymentStatus = Enum.Parse<PaymentStatus>(reader.GetString(5)),
@@ -99,7 +106,7 @@ namespace DAL.PostgresRepositories
                             {
                                 Id = reader.GetInt32(0),
                                 ClientId = reader.GetInt32(1),
-                                Date = reader.GetDateTime(2),
+                                Date = reader.GetDateTime(2), // мб конверт из utc к локальной дате
                                 TotalCost = reader.IsDBNull(3) ? null : reader.GetDecimal(3),
                                 Status = Enum.Parse<OrderStatus>(reader.GetString(4)), // enum status
                                 PaymentStatus = Enum.Parse<PaymentStatus>(reader.GetString(5)),
@@ -133,6 +140,7 @@ namespace DAL.PostgresRepositories
                 using (var command = new NpgsqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@client_id", entity.ClientId);
+                    // конверт к utc
                     command.Parameters.AddWithValue("@date", entity.Date);
                     command.Parameters.AddWithValue("@total_cost", entity.TotalCost);
                     command.Parameters.AddWithValue("@status", entity.Status.ToString());

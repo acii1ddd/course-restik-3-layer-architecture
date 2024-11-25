@@ -1,7 +1,8 @@
 ﻿using BLL.DTO;
-using BLL.ServiceInterfaces;
 using DAL.Interfaces;
 using AutoMapper;
+using BLL.ServiceInterfaces.LogicInterfaces;
+using BLL.ServiceInterfaces.DTOs;
 
 namespace BLL.Services
 {
