@@ -31,8 +31,8 @@ namespace DAL.PostgresRepositories
                         if (reader.Read())
                         {
                             entity.Id = reader.GetInt32(0); // id в бд соответствует id объекта (так как returnings id)
-                            DateTime utcDate = reader.GetDateTime(1); // в бд хранится utc время
-                            entity.Date = utcDate.ToLocalTime(); // преобразуем в локальное время
+                            //DateTime utcDate = reader.GetDateTime(1); // в бд хранится utc время
+                            //entity.Date = utcDate.ToLocalTime(); // преобразуем в локальное время
                         }
                     }
                 }

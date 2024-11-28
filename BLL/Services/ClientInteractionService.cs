@@ -41,11 +41,10 @@ namespace BLL.Services
 
                 
                 // total_cost в объекте order не обновляется в программе (в бд подсчитывается триггером)
-
-
                 foreach (var selectedDish in selectedDishes)
                 {
-                    var dish = _mapper.Map<Dish>(selectedDish.Key); // выбранное блюдо
+                    //var dish = _mapper.Map<Dish>(selectedDish.Key); // выбранное блюдо
+                    var dish = selectedDish.Key; // выбранное блюдо dishDTO
                     int quantity = selectedDish.Value; // quantity
                     _orderItemRepository.Add(new OrderItem
                     {

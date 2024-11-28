@@ -1,6 +1,6 @@
 ﻿using BLL.DTO;
 using BLL.ServiceInterfaces;
-using BLL.ServiceInterfaces.LogicInterfaces;
+using BLL.ServiceInterfaces.ValidatorsInterfaces;
 using course_work.Views;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -10,12 +10,14 @@ namespace course_work.Handlers
     {
         private readonly IClientService _clientService;
         private readonly IClientInteractionService _clientInteractionService;
+        private readonly IOrderValidatorService _orderValidatorService;
         private readonly ClientView _clientView;
 
         public ClientHandler(IServiceProvider provider)
         {
             _clientService = provider.GetService<IClientService>() ?? throw new ArgumentNullException();
             _clientInteractionService = provider.GetService<IClientInteractionService>() ?? throw new ArgumentNullException();
+            _orderValidatorService = provider.GetService<IOrderValidatorService>() ?? throw new ArgumentNullException();
             _clientView = new ClientView();
         }
 
@@ -64,35 +66,28 @@ namespace course_work.Handlers
 
         private void ProcessOrder(ClientDTO client)
         {
-            // доступные для заказа блюда
-            var availableDishes = _clientInteractionService.GetAvailableDishes().ToList();
-            string retryInput;
+            string retryInput = "да";
             do
             {
                 ShowAvailableDishes();
-                var selectedDishes = _clientView.GetSelectedDishes(availableDishes);
-
-                // выбрано хотя бы 1 блюдо
-                if (selectedDishes.Count > 0)
+                var selectedDishesDict = _clientView.GetSelectedDishes(_orderValidatorService);
+                try
                 {
+                    _orderValidatorService.ValidateSelectedDishes(selectedDishesDict);
+
+                    // выбрано хотя бы 1 блюдо
                     int tableNumber = Validator.GetValidInteger(
-                        "Введите номер столика для заказа: ",
-                        "Введите корректный номер столика.\n",
-                        dishId => dishId > 0
+                            "Введите номер столика для заказа: ",
+                            "Введите корректный номер столика.\n",
+                            dishId => dishId > 0
                     );
-                    try 
-                    {
-                        _clientInteractionService.MakeOrder(selectedDishes, client, tableNumber); // Передаем заказ в сервис
-                        Console.WriteLine("\nВаш заказ успешно совершен. Ожидайте.");
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine("\nОшибка совершения заказа. " + ex.Message);
-                    }
+                    _clientInteractionService.MakeOrder(selectedDishesDict, client, tableNumber); // Передаем заказ в сервис
+                    Console.WriteLine("\nВаш заказ успешно совершен. Ожидайте.");
                     retryInput = "нет";
                 }
-                else
+                catch (Exception ex)
                 {
+                    Console.WriteLine("\nОшибка совершения заказа. " + ex.Message);
                     retryInput = _clientView.GetYesOrNoAnswer();
                 }
             } while (retryInput == "да");
