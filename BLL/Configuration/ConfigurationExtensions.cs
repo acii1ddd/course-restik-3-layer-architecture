@@ -1,5 +1,6 @@
 ﻿using BLL.Profiles;
 using BLL.ServiceInterfaces;
+using BLL.ServiceInterfaces.DTOs;
 using BLL.ServiceInterfaces.LogicInterfaces;
 using BLL.ServiceInterfaces.ValidatorsInterfaces;
 using BLL.Services;
@@ -31,6 +32,8 @@ namespace BLL.Configuration
             services.AddTransient<IWorkerService, WorkerService>();
             services.AddTransient<IAuthService, AuthService>();
             services.AddTransient<IClientInteractionService, ClientInteractionService>();
+            services.AddTransient<ICookService, CookService>();
+
 
             // validators
             services.AddTransient<IOrderValidatorService, OrderValidatorService>();

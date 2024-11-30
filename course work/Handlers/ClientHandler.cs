@@ -8,14 +8,12 @@ namespace course_work.Handlers
 {
     public class ClientHandler
     {
-        private readonly IClientService _clientService;
         private readonly IClientInteractionService _clientInteractionService;
         private readonly IOrderValidatorService _orderValidatorService;
         private readonly ClientView _clientView;
 
         public ClientHandler(IServiceProvider provider)
         {
-            _clientService = provider.GetService<IClientService>() ?? throw new ArgumentNullException();
             _clientInteractionService = provider.GetService<IClientInteractionService>() ?? throw new ArgumentNullException();
             _orderValidatorService = provider.GetService<IOrderValidatorService>() ?? throw new ArgumentNullException();
             _clientView = new ClientView();
@@ -25,7 +23,7 @@ namespace course_work.Handlers
         {
             Console.WriteLine($"\nДобро пожаловать, {client.Name}!");
             bool isLeave = false;
-            while(true)
+            while (true)
             {
                 _clientView.ShowMenu(); // Menu с функционалом
 
@@ -40,8 +38,7 @@ namespace course_work.Handlers
                         ProcessOrder(client);
                         break;
                     case 3:
-                        Console.WriteLine("Просмотр статуса заказа");
-                        //_clientService.
+                        ShowOrderStatus(client);
                         break;
                     case 0:
                         isLeave = true;
@@ -91,6 +88,20 @@ namespace course_work.Handlers
                     retryInput = _clientView.GetYesOrNoAnswer();
                 }
             } while (retryInput == "да");
+        }
+
+        public void ShowOrderStatus(ClientDTO client)
+        {
+            try
+            {
+                var currOrders = _clientInteractionService.GetOrdersForClient(client);
+                _clientView.PrintOrders(currOrders);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("\nОшибка получения списка заказов. " + ex.Message);
+                throw;
+            }
         }
     }
 }

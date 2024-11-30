@@ -68,9 +68,49 @@ namespace BLL.Services
             return _mapper.Map<IEnumerable<DishDTO>>(dishes);
         }
 
-        public OrderDTO GetOrderStatus(int orderId)
+        public List<OrderDTO> GetOrdersForClient(ClientDTO client)
         {
-            throw new NotImplementedException();
+            _orderValidator.ValidateClient(client);
+
+            var clientOrders = _orderRepository // total_cost обновлен триггером из бд
+                .GetAll()
+                .Where(order => order.ClientId == client.Id)
+                .ToList();
+
+            if (clientOrders == null || !clientOrders.Any()) // any - нет элементов
+            {
+                return new List<OrderDTO>(); // Если заказов нет, возвращаем пустой список
+            }
+
+            var orderItems = _orderItemRepository.GetAll().ToList();
+            var dishes = _dishRepository.GetAll().ToList();
+
+            // маппинг заказов в DTO с прокинутыми в свойства объектами
+            var ordersWithItems = clientOrders.Select(order =>
+            {
+                // orderDTO
+                var orderDto = _mapper.Map<OrderDTO>(order);
+
+                // Получаем позиции заказа для текущего заказа
+                var orderItemsForOrder = orderItems.Where(item => item.OrderId == order.Id).ToList();
+
+                // по orders_items ам проходимся
+                var orderItemsWithDish = orderItemsForOrder.Select(orderItem =>
+                {
+                    var orderItemDto = _mapper.Map<OrderItemDTO>(orderItem);
+
+                    // Находим блюдо для позиции заказа
+                    var dish = dishes.FirstOrDefault(d => d.Id == orderItem.DishId);
+                    orderItemDto.Dish = _mapper.Map<DishDTO>(dish); // добавляем блюдо в DishDTO
+
+                    return orderItemDto;
+                }).ToList();
+
+                orderDto.Items = orderItemsWithDish;
+                return orderDto;
+            }).ToList();
+
+            return ordersWithItems;
         }
     }
 }

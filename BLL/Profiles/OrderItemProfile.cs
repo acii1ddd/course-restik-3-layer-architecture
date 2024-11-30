@@ -8,7 +8,9 @@ namespace BLL.Profiles
     {
         public OrderItemProfile()
         {
-            CreateMap<Order, OrderDTO>().ReverseMap();
+            CreateMap<OrderItem, OrderItemDTO>()
+                .ForMember(dto => dto.Dish, opt => opt.Ignore())
+                .ReverseMap();
         }
     }
 }

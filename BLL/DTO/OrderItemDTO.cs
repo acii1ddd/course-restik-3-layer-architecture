@@ -15,5 +15,7 @@ namespace BLL.DTO
         public decimal CurrDishPrice { get; set; }
 
         public decimal TotalDishPrice { get; set; } // триггер
+
+        public DishDTO Dish { get; set; }
     }
 }

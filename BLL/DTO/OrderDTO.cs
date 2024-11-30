@@ -22,5 +22,7 @@ namespace BLL.DTO
         public int? CookId { get; set; }
 
         public int TableNumber { get; set; }
+
+        public List<OrderItemDTO> Items { get; set; } = new(); // Связанные блюда
     }
 }

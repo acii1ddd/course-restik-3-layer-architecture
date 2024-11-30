@@ -1,6 +1,7 @@
 ﻿using BLL.DTO;
 using BLL.ServiceInterfaces.ValidatorsInterfaces;
 using ConsoleTables;
+using DAL.Entities;
 
 namespace course_work.Views
 {
@@ -17,18 +18,71 @@ namespace course_work.Views
         
         public void PrintDishes(List<DishDTO> dishes)
         {
-            if (dishes == null)
+            if (dishes == null || dishes.Count() == 0)
             {
                 Console.WriteLine("Список блюд пуст");
                 return;
             }
             
             Console.WriteLine("\nМеню блюд:");
-            //var table = new ConsoleTable("№", typeof(dishes[i].Name));
-            int nameWidth = dishes.Max(dish => dish.Name.Length) + 5; // макс длина названия блюда + 5
-            for (int i = 0; i < dishes.Count(); i++)
+            var table = new ConsoleTable("№", "Название блюда", "Цена").Configure(opt => opt.EnableCount = false);
+            for (int i = 0; i < dishes.Count; i++)
             {
-                Console.WriteLine($"{i + 1}. {dishes[i].Name.PadRight(nameWidth)}{dishes[i].Price}");
+                table.AddRow(i + 1, dishes[i].Name, $"{dishes[i].Price:C}"); // currency
+            }
+            table.Write();
+        }
+
+        public void PrintOrders(List<OrderDTO> currOrders)
+        {
+            if (currOrders == null || !currOrders.Any())
+            {
+                Console.WriteLine("У вас нет активных заказов.");
+                return;
+            }
+
+            for (int i = 0; i < currOrders.Count; i++)
+            {
+                string statusDescription = GetOrderStatusDescription(currOrders[i].Status);
+                Console.WriteLine($"\nЗаказ {i + 1}. (Дата: {currOrders[i].Date}, Столик: {currOrders[i].TableNumber}, Статус: {statusDescription}, Общая стоимость: {currOrders[i].TotalCost})");
+
+                var dishesTable = new ConsoleTable("№", "Имя блюда", "Цена за единицу", "Количество", "Итоговая стоимость");
+
+                // по блюдам текущего заказа (по orderItem'ам)
+                for (int j = 0; j < currOrders[i].Items.Count; j++)
+                {
+                    dishesTable.AddRow(
+                        j + 1,
+                        currOrders[i].Items[j].Dish.Name, // получ блюдо для вывода имени
+                        currOrders[i].Items[j].CurrDishPrice,
+                        currOrders[i].Items[j].Quantity, // у самого ordersItem'а
+                        currOrders[i].Items[j].TotalDishPrice
+                    );
+                }
+
+                dishesTable.Write(Format.Alternative);
+            }
+        }
+
+        // Метод для получения читаемого статуса заказа
+        private string GetOrderStatusDescription(OrderStatus status)
+        {
+            switch (status)
+            {
+                case OrderStatus.InProcessing:
+                    return "В обработке";
+                case OrderStatus.IsCooking:
+                    return "Готовится";
+                case OrderStatus.Cooked:
+                    return "Приготовлен";
+                case OrderStatus.InDelivery:
+                    return "В доставке";
+                case OrderStatus.Delivered:
+                    return "Доставлен";
+                case OrderStatus.Completed:
+                    return "Обработан";
+                default:
+                    return "Неизвестный статус";
             }
         }
 
@@ -37,30 +91,6 @@ namespace course_work.Views
             FinishedInput = 200,
             InvalidInput = 400
         }
-
-        //private int GetDishId(int maxDishesCount)
-        //{
-        //    Console.Write("\nВведите номер блюда (или нажмите Enter для завершения): ");
-        //    var input = Console.ReadLine();
-        //    if (string.IsNullOrEmpty(input))
-        //    {
-        //        return (int)DishIdInputStatus.Finished; // закончил ввод
-        //    }
-
-        //    // text
-        //    if (!int.TryParse(input, out int dishId))
-        //    {
-        //        Console.WriteLine("Некорректный номер блюда. Повторите ввод.");
-        //        return (int)DishIdInputStatus.Invalid;
-        //    }
-
-        //    if (dishId > maxDishesCount || dishId <= 0)
-        //    {
-        //        Console.Write("Нет такого блюда в меню.\n");
-        //        return (int)DishIdInputStatus.Invalid;
-        //    }
-        //    return dishId - 1; // индекс массива с 0
-        //}
 
         private int GetDishId()
         {
@@ -74,7 +104,7 @@ namespace course_work.Views
             //text
             if (!int.TryParse(input, out int dishId))
             {
-                Console.WriteLine("Некорректный номер блюда. Введите целое числовое значение.");
+                Console.WriteLine("Некорректный номер блюда. Введите целое числовое значение.\n");
                 return (int)DishIdInputStatus.InvalidInput;
             }
             return dishId;
@@ -88,8 +118,6 @@ namespace course_work.Views
                 dishId => dishId > 0
             );
         }
-
-
         public Dictionary<DishDTO, int> GetSelectedDishes(IOrderValidatorService validator)
         {
             // словарь для выбранных блюд
@@ -127,46 +155,11 @@ namespace course_work.Views
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    Console.WriteLine(ex.Message + "\n");
                 }
             } while (true);
             return selectedDishes;
         }
-
-        //public Dictionary<DishDTO, int> GetSelectedDishes(List<DishDTO> availableDishes)
-        //{
-        //    // словарь для выбранных блюд
-        //    var selectedDishes = new Dictionary<DishDTO, int>();
-        //    do
-        //    {
-        //        // ввел номер блюда
-        //        int dishNUmber = GetDishId(availableDishes.Count);
-        //        if (dishId == (int)DishIdInputStatus.FinishedInput)
-        //        {
-        //            break; // клиент закончил ввод
-        //        }
-        //        if (dishId == (int)DishIdInputStatus.InvalidInput)
-        //        {
-        //            continue;
-        //        }
-
-        //        // блюдо для добавления
-        //        var dish = availableDishes[dishId];
-        //        // если количество
-        //        int quantity = GetDishQuantity();
-
-        //        if (selectedDishes.ContainsKey(dish))
-        //        {
-        //            selectedDishes[dish] += quantity; // увелич кол-во, если блюдо уже выбрано
-        //        }
-        //        else
-        //        {
-        //            selectedDishes[dish] = quantity;
-        //        }
-        //        Console.WriteLine($"Добавлено: {dish.Name}, кол-во - {selectedDishes[dish]}");
-        //    } while (true);
-        //    return selectedDishes;
-        //}
 
         public string GetYesOrNoAnswer()
         {

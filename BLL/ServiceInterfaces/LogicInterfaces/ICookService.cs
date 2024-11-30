@@ -1,7 +1,9 @@
-﻿namespace BLL.ServiceInterfaces.LogicInterfaces
+﻿using BLL.DTO;
+
+namespace BLL.ServiceInterfaces.LogicInterfaces
 {
     public interface ICookService
     {
-        // methods for cook logic
+        public List<OrderDTO> GetAlailableOrders();
     }
 }

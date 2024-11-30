@@ -1,6 +1,6 @@
 ﻿using BLL.DTO;
 
-namespace BLL.ServiceInterfaces
+namespace BLL.ServiceInterfaces.DTOs
 {
     public interface IClientService : IService<ClientDTO>
     {

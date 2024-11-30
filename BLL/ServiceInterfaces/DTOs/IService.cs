@@ -1,6 +1,4 @@
-﻿using BLL.ServiceInterfaces.DTOs;
-
-namespace BLL.ServiceInterfaces
+﻿namespace BLL.ServiceInterfaces.DTOs
 {
     public interface IService<T> where T : IDTO
     {

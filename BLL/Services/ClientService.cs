@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using BLL.DTO;
-using BLL.ServiceInterfaces;
+using BLL.ServiceInterfaces.DTOs;
 using DAL.Entities;
 using DAL.Interfaces;
 
