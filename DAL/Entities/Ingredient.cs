@@ -6,7 +6,7 @@
 
         public string Name { get; set; } = string.Empty;
 
-        public IngredientUnit Unit { get; set; }
+        public UnitsOfMeasurement Unit { get; set; }
 
         public decimal StockQuantity { get; set; }
 
@@ -14,10 +14,10 @@
     }
 }
 
-public enum IngredientUnit
+public enum UnitsOfMeasurement
 {
     Kg,
     Gram,
-    Litre,
-    Piece
+    Liter,
+    Milliliter
 }

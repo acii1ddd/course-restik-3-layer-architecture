@@ -13,7 +13,8 @@ namespace course_work.Handlers
             switch (currRole.ToLower())
             {
                 case "waiter":
-                    WaiterHandler.HandleWaiter(worker, provider);
+                    WaiterHandler waiterHandler = new WaiterHandler(provider);
+                    waiterHandler.HandleWaiter(worker);
                     break;
                 case "cook":
                     CookHandler cookHandler = new CookHandler(provider);

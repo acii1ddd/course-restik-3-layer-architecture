@@ -10,12 +10,6 @@
 
         public decimal Quantity { get; set; }
 
-        public RecipeUnit Unit { get; set; }
+        public UnitsOfMeasurement Unit { get; set; }
     }
-}
-
-public enum RecipeUnit
-{
-    Gram,
-    Piece
 }

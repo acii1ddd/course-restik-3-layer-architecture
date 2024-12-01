@@ -11,7 +11,7 @@ namespace course_work.Views
         {
             Console.WriteLine("\n1. Просмотр меню блюд");
             Console.WriteLine("2. Совершение заказа");
-            Console.WriteLine("3. Просмотр статуса заказа");
+            Console.WriteLine("3. Просмотр совершенных заказов");
             Console.WriteLine("0. Выход");
             Console.WriteLine("Сделайте выбор:");
         }
@@ -43,7 +43,7 @@ namespace course_work.Views
 
             for (int i = 0; i < currOrders.Count; i++)
             {
-                string statusDescription = GetOrderStatusDescription(currOrders[i].Status);
+                string statusDescription = HelperUI.GetOrderStatusDescription(currOrders[i].Status);
                 Console.WriteLine($"\nЗаказ {i + 1}. (Дата: {currOrders[i].Date}, Столик: {currOrders[i].TableNumber}, Статус: {statusDescription}, Общая стоимость: {currOrders[i].TotalCost})");
 
                 var dishesTable = new ConsoleTable("№", "Имя блюда", "Цена за единицу", "Количество", "Итоговая стоимость");
@@ -64,27 +64,27 @@ namespace course_work.Views
             }
         }
 
-        // Метод для получения читаемого статуса заказа
-        private string GetOrderStatusDescription(OrderStatus status)
-        {
-            switch (status)
-            {
-                case OrderStatus.InProcessing:
-                    return "В обработке";
-                case OrderStatus.IsCooking:
-                    return "Готовится";
-                case OrderStatus.Cooked:
-                    return "Приготовлен";
-                case OrderStatus.InDelivery:
-                    return "В доставке";
-                case OrderStatus.Delivered:
-                    return "Доставлен";
-                case OrderStatus.Completed:
-                    return "Обработан";
-                default:
-                    return "Неизвестный статус";
-            }
-        }
+        //// Метод для получения читаемого статуса заказа
+        //private string GetOrderStatusDescription(OrderStatus status)
+        //{
+        //    switch (status)
+        //    {
+        //        case OrderStatus.InProcessing:
+        //            return "В обработке";
+        //        case OrderStatus.IsCooking:
+        //            return "Готовится";
+        //        case OrderStatus.Cooked:
+        //            return "Приготовлен";
+        //        case OrderStatus.InDelivery:
+        //            return "В доставке";
+        //        case OrderStatus.Delivered:
+        //            return "Доставлен";
+        //        case OrderStatus.Completed:
+        //            return "Обработан";
+        //        default:
+        //            return "Неизвестный статус";
+        //    }
+        //}
 
         private enum DishIdInputStatus
         {
@@ -118,7 +118,8 @@ namespace course_work.Views
                 dishId => dishId > 0
             );
         }
-        public Dictionary<DishDTO, int> GetSelectedDishes(IOrderValidatorService validator)
+
+        public Dictionary<DishDTO, int> GetSelectedDishes(IClientValidatorService validator)
         {
             // словарь для выбранных блюд
             var selectedDishes = new Dictionary<DishDTO, int>();

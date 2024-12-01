@@ -9,13 +9,13 @@ namespace course_work.Handlers
     public class ClientHandler
     {
         private readonly IClientInteractionService _clientInteractionService;
-        private readonly IOrderValidatorService _orderValidatorService;
+        private readonly IClientValidatorService _clientValidatorService;
         private readonly ClientView _clientView;
 
         public ClientHandler(IServiceProvider provider)
         {
             _clientInteractionService = provider.GetService<IClientInteractionService>() ?? throw new ArgumentNullException();
-            _orderValidatorService = provider.GetService<IOrderValidatorService>() ?? throw new ArgumentNullException();
+            _clientValidatorService = provider.GetService<IClientValidatorService>() ?? throw new ArgumentNullException();
             _clientView = new ClientView();
         }
 
@@ -67,10 +67,10 @@ namespace course_work.Handlers
             do
             {
                 ShowAvailableDishes();
-                var selectedDishesDict = _clientView.GetSelectedDishes(_orderValidatorService);
+                var selectedDishesDict = _clientView.GetSelectedDishes(_clientValidatorService);
                 try
                 {
-                    _orderValidatorService.ValidateSelectedDishes(selectedDishesDict);
+                    _clientValidatorService.ValidateSelectedDishes(selectedDishesDict);
 
                     // выбрано хотя бы 1 блюдо
                     int tableNumber = Validator.GetValidInteger(

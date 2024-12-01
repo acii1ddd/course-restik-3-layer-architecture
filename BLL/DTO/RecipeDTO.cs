@@ -1,4 +1,5 @@
 ﻿using BLL.ServiceInterfaces.DTOs;
+using DAL.Entities;
 
 namespace BLL.DTO
 {
@@ -12,6 +13,10 @@ namespace BLL.DTO
 
         public decimal Quantity { get; set; }
 
-        public RecipeUnit Unit { get; set; }
+        public UnitsOfMeasurement Unit { get; set; }
+
+        public DishDTO Dish { get; set; }
+
+        public IngredientDTO Ingredient { get; set; }
     }
 }

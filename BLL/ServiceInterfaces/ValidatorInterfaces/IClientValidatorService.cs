@@ -2,7 +2,7 @@
 
 namespace BLL.ServiceInterfaces.ValidatorsInterfaces
 {
-    public interface IOrderValidatorService
+    public interface IClientValidatorService
     {
         public void IsOrderValid(Dictionary<DishDTO, int> selectedDishes, ClientDTO clientId, int tableNumber);
         

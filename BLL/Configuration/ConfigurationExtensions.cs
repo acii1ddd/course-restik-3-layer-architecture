@@ -2,9 +2,11 @@
 using BLL.ServiceInterfaces;
 using BLL.ServiceInterfaces.DTOs;
 using BLL.ServiceInterfaces.LogicInterfaces;
+using BLL.ServiceInterfaces.ValidatorInterfaces;
 using BLL.ServiceInterfaces.ValidatorsInterfaces;
 using BLL.Services;
 using BLL.Services.Validators;
+using BLL.Services.ValidatorsServices;
 using DAL.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -23,7 +25,9 @@ namespace BLL.Configuration
                 typeof(WorkerProfile),
                 typeof(DishProfile),
                 typeof(OrderProfile),
-                typeof(OrderItemProfile)
+                typeof(OrderItemProfile),
+                typeof(RecipeProfile),
+                typeof(IngredientProfile)
             );
 
             // сервисы
@@ -33,10 +37,12 @@ namespace BLL.Configuration
             services.AddTransient<IAuthService, AuthService>();
             services.AddTransient<IClientInteractionService, ClientInteractionService>();
             services.AddTransient<ICookService, CookService>();
-
+            services.AddTransient<IWaiterService, WaiterService>();
 
             // validators
-            services.AddTransient<IOrderValidatorService, OrderValidatorService>();
+            services.AddTransient<IClientValidatorService, ClientValidatorService>();
+            services.AddTransient<ICookValidatorService, CookValidatorService>();
+            services.AddTransient<IWaiterValidatorService, WaiterValidatorService>();
         }
     }
 }

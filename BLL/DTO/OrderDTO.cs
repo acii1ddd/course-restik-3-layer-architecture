@@ -24,5 +24,7 @@ namespace BLL.DTO
         public int TableNumber { get; set; }
 
         public List<OrderItemDTO> Items { get; set; } = new(); // Связанные блюда
+
+        public ClientDTO Client { get; set; }
     }
 }

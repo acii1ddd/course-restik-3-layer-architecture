@@ -13,23 +13,22 @@ namespace BLL.Services
         private readonly IOrderRepository _orderRepository;
         private readonly IOrderItemRepository _orderItemRepository;
         private readonly IMapper _mapper;
-        
-        private readonly IOrderValidatorService _orderValidator;
+        private readonly IClientValidatorService _clientValidator;
 
-        public ClientInteractionService(IDishRepository dishRepository, IOrderRepository orderRepository, IOrderItemRepository orderItemRepository, IMapper mapper, IOrderValidatorService orderValidator)
+        public ClientInteractionService(IDishRepository dishRepository, IOrderRepository orderRepository, IOrderItemRepository orderItemRepository, IMapper mapper, IClientValidatorService orderValidator)
         {
             _dishRepository = dishRepository;
             _orderRepository = orderRepository;
             _orderItemRepository = orderItemRepository;
             _mapper = mapper;
-            _orderValidator = orderValidator;
+            _clientValidator = orderValidator;
         }
 
         public void MakeOrder(Dictionary<DishDTO, int> selectedDishes, ClientDTO clientId, int tableNumber)
         {
             try
             {
-                _orderValidator.IsOrderValid(selectedDishes, clientId, tableNumber);
+                _clientValidator.IsOrderValid(selectedDishes, clientId, tableNumber);
                 
                 // если заказ валиден для создания - добавляем его в бд
                 var order = new Order
@@ -70,7 +69,7 @@ namespace BLL.Services
 
         public List<OrderDTO> GetOrdersForClient(ClientDTO client)
         {
-            _orderValidator.ValidateClient(client);
+            _clientValidator.ValidateClient(client);
 
             var clientOrders = _orderRepository // total_cost обновлен триггером из бд
                 .GetAll()

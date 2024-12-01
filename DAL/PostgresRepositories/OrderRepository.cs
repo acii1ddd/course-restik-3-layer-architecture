@@ -142,11 +142,11 @@ namespace DAL.PostgresRepositories
                     command.Parameters.AddWithValue("@client_id", entity.ClientId);
                     // конверт к utc
                     command.Parameters.AddWithValue("@date", entity.Date);
-                    command.Parameters.AddWithValue("@total_cost", entity.TotalCost);
+                    command.Parameters.AddWithValue("@total_cost", entity.TotalCost ?? (object)DBNull.Value); // явный null в ячейку для базы данных
                     command.Parameters.AddWithValue("@status", entity.Status.ToString());
                     command.Parameters.AddWithValue("@payment_status", entity.PaymentStatus.ToString());
-                    command.Parameters.AddWithValue("@waiter_id", entity.WaiterId);
-                    command.Parameters.AddWithValue("@cook_id", entity.CookId);
+                    command.Parameters.AddWithValue("@waiter_id", entity.WaiterId ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@cook_id", entity.CookId ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@table_number", entity.TableNumber);
                     command.Parameters.AddWithValue("@id", entity.Id);
 

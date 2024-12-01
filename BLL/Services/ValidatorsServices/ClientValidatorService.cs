@@ -5,16 +5,18 @@ using DAL.Interfaces;
 
 namespace BLL.Services.Validators
 {
-    internal class OrderValidatorService : IOrderValidatorService
+    internal class ClientValidatorService : IClientValidatorService
     {
         private readonly IDishRepository _dishRepository;
         private readonly IClientRepository _clientRepository;
+        private readonly IOrderRepository _orderRepository;
         private readonly IMapper _mapper;
 
-        public OrderValidatorService(IDishRepository dishRepository, IClientRepository clientRepository, IMapper mapper)
+        public ClientValidatorService(IDishRepository dishRepository, IClientRepository clientRepository, IOrderRepository orderRepository, IMapper mapper)
         {
             _dishRepository = dishRepository;
             _clientRepository = clientRepository;
+            _orderRepository = orderRepository;
             _mapper = mapper;
         }
 

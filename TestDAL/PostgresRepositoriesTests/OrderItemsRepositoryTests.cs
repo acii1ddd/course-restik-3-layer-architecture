@@ -206,7 +206,7 @@ namespace TestDAL.PostgresRepositoriesTests
         }
 
         [Fact]
-        public void UpdateOrderItems()
+        public void UpdateOrderItem()
         {
             ClearAllTables();
             OrderItem orderItem1 = CreateTestOrderItemWithOrderIdAndDishId(1, 1);
