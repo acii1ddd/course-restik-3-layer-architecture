@@ -5,7 +5,7 @@ using BLL.ServiceInterfaces.ValidatorsInterfaces;
 using DAL.Entities;
 using DAL.Interfaces;
 
-namespace BLL.Services
+namespace BLL.Services.LogicServices
 {
     internal class ClientInteractionService : IClientInteractionService
     {
@@ -29,7 +29,7 @@ namespace BLL.Services
             try
             {
                 _clientValidator.IsOrderValid(selectedDishes, clientId, tableNumber);
-                
+
                 // если заказ валиден для создания - добавляем его в бд
                 var order = new Order
                 {
@@ -38,11 +38,9 @@ namespace BLL.Services
                 };
                 _orderRepository.Add(order);
 
-                
                 // total_cost в объекте order не обновляется в программе (в бд подсчитывается триггером)
                 foreach (var selectedDish in selectedDishes)
                 {
-                    //var dish = _mapper.Map<Dish>(selectedDish.Key); // выбранное блюдо
                     var dish = selectedDish.Key; // выбранное блюдо dishDTO
                     int quantity = selectedDish.Value; // quantity
                     _orderItemRepository.Add(new OrderItem

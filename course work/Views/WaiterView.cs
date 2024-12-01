@@ -1,5 +1,6 @@
 ﻿using BLL.DTO;
 using ConsoleTables;
+using DAL.Entities;
 
 namespace course_work.Views
 {
@@ -16,7 +17,7 @@ namespace course_work.Views
             Console.WriteLine("Сделайте выбор:");
         }
 
-        internal void PrintOrders(List<OrderDTO> orders)
+        internal void PrintOrders(List<OrderDTO> orders, string message)
         {
             if (orders == null || orders.Count() == 0)
             {
@@ -24,7 +25,7 @@ namespace course_work.Views
                 return;
             }
 
-            Console.WriteLine("\nЗаказы для доставки:");
+            Console.WriteLine("\n" + message);
             for (int i = 0; i < orders.Count; i++)
             {
                 string orderStatusDescription = HelperUI.GetOrderStatusDescription(orders[i].Status);
@@ -66,6 +67,31 @@ namespace course_work.Views
                 }
             }
             return retryInput;
+        }
+
+        internal PaymentMethod GetPaymentMethod()
+        {
+            while (true)
+            {
+                Console.WriteLine("1. Наличные");
+                Console.WriteLine("2. Карта");
+                Console.WriteLine("Выберите способ оплаты заказа:");
+
+                int input = Validator.GetValidInteger("Введите числовое значение: ");
+
+                if (input == 1)
+                {
+                    return PaymentMethod.Cash;
+                }
+                else if (input == 2)
+                {
+                    return PaymentMethod.Card;
+                }
+                else
+                {
+                    Console.WriteLine("\nВыберите корректный способ: 1 либо 2.");
+                }
+            }
         }
     }
 }

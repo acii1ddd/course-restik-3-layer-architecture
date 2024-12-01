@@ -12,6 +12,7 @@ namespace BLL.ServiceInterfaces.ValidatorInterfaces
         public void ValidateCook(WorkerDTO worker);
 
         public DishDTO ValidateDishByNumber(int dishNumber);
+
         void ValidateTakeOrder(int selectedOrder, WorkerDTO cook);
     }
 }

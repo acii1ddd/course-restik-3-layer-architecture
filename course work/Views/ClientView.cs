@@ -44,7 +44,8 @@ namespace course_work.Views
             for (int i = 0; i < currOrders.Count; i++)
             {
                 string statusDescription = HelperUI.GetOrderStatusDescription(currOrders[i].Status);
-                Console.WriteLine($"\nЗаказ {i + 1}. (Дата: {currOrders[i].Date}, Столик: {currOrders[i].TableNumber}, Статус: {statusDescription}, Общая стоимость: {currOrders[i].TotalCost})");
+                string paymentStatusDescription = HelperUI.GetPaymentStatusDescription(currOrders[i].PaymentStatus);
+                Console.WriteLine($"\nЗаказ {i + 1}. (Дата: {currOrders[i].Date}, Столик: {currOrders[i].TableNumber}, Общая стоимость: {currOrders[i].TotalCost}, Статус: {statusDescription}, Статус оплаты: {paymentStatusDescription})");
 
                 var dishesTable = new ConsoleTable("№", "Имя блюда", "Цена за единицу", "Количество", "Итоговая стоимость");
 
@@ -63,29 +64,6 @@ namespace course_work.Views
                 dishesTable.Write(Format.Alternative);
             }
         }
-
-        //// Метод для получения читаемого статуса заказа
-        //private string GetOrderStatusDescription(OrderStatus status)
-        //{
-        //    switch (status)
-        //    {
-        //        case OrderStatus.InProcessing:
-        //            return "В обработке";
-        //        case OrderStatus.IsCooking:
-        //            return "Готовится";
-        //        case OrderStatus.Cooked:
-        //            return "Приготовлен";
-        //        case OrderStatus.InDelivery:
-        //            return "В доставке";
-        //        case OrderStatus.Delivered:
-        //            return "Доставлен";
-        //        case OrderStatus.Completed:
-        //            return "Обработан";
-        //        default:
-        //            return "Неизвестный статус";
-        //    }
-        //}
-
         private enum DishIdInputStatus
         {
             FinishedInput = 200,

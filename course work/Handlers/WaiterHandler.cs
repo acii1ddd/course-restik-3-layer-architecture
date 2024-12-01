@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using BLL.ServiceInterfaces.LogicInterfaces;
 using course_work.Views;
+using DAL.Entities;
 
 namespace course_work.Handlers
 {
@@ -9,7 +10,6 @@ namespace course_work.Handlers
     {
         private readonly IWaiterService _waiterService;
         private readonly WaiterView _waiterView;
-
 
         public WaiterHandler(IServiceProvider provider)
         {
@@ -29,19 +29,19 @@ namespace course_work.Handlers
                 switch (choice)
                 {
                     case 1:
-                        ShowAvailableOrders();
+                        ShowAvailableOrdersToDelivery();
                         break;
                     case 2:
                         TakeAnOrder(worker);
                         break;
                     case 3:
-                        //ShowCurrentOrders(worker);
+                        ShowAllCurrentOrders(worker);
                         break;
                     case 4:
-                        //MarkOrderAsCooked(worker);
+                        MarkOrderAsDelivered(worker);
                         break;
                     case 5:
-                        //ViewDishRecipe();
+                        AcceptPayment(worker);
                         break;
                     case 0:
                         isLeave = true;
@@ -58,13 +58,20 @@ namespace course_work.Handlers
             }
         }
 
+        private bool ShowAvailableOrdersToDelivery()
+        {
+            var orders = _waiterService.GetAlailableOrdersToDelivery();
+            _waiterView.PrintOrders(orders, "Заказы, доступные для доставки:");
+            return orders.Count() == 0 ? false : true;
+        }
+
         private void TakeAnOrder(WorkerDTO worker)
         {
             string retryInput = "да";
             do
             {
                 // заказов нету
-                if (ShowAvailableOrders())
+                if (ShowAvailableOrdersToDelivery())
                 {
                     int selectedOrder = HelperUI.GetSelectedOrderWithMessage("Введите номер заказа, который вы берете: ");
                     try
@@ -86,11 +93,109 @@ namespace course_work.Handlers
             } while (retryInput == "да");
         }
 
-        private bool ShowAvailableOrders()
+        // общие заказы (могут быть доставлены или еще не доставлены / не оплачены)
+        private bool ShowAllCurrentOrders(WorkerDTO worker)
         {
-            var orders = _waiterService.GetAlailableOrders();
-            _waiterView.PrintOrders(orders);
-            return orders.Count() == 0 ? false : true;
+            try
+            {
+                var currentOrders = _waiterService.GetCurrentOrders(worker);
+                _waiterView.PrintOrders(currentOrders, "Ваши текущие заказы:");
+                return currentOrders.Count() == 0 ? false : true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка при получении текущих заказов + {ex.Message}");
+                throw;
+            }
+        }
+
+        // доставленные заказы
+        private bool ShowUndeliveredOrders(WorkerDTO worker)
+        {
+            try
+            {
+                var currentOrders = _waiterService.GetCurrentUndeliveredOrders(worker);
+                _waiterView.PrintOrders(currentOrders, "Заказы для доставки:");
+                return currentOrders.Count() == 0 ? false : true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка при получении текущих заказов + {ex.Message}");
+                throw;
+            }
+        }
+
+        private void MarkOrderAsDelivered(WorkerDTO worker)
+        {
+            string retryInput = "да";
+            do
+            {
+                // если нет заказов
+                if (ShowUndeliveredOrders(worker))
+                {
+                    int selectedOrder = HelperUI.GetSelectedOrderWithMessage("Введите номер заказа, который вы доставили: ");
+                    try
+                    {
+                        _waiterService.MarkOrderAsDelivered(selectedOrder);
+                        Console.WriteLine("\nЗаказ успешно отмечен как доставленный.");
+                        retryInput = "нет";
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("\nОшибка при отметке заказа. " + ex.Message);
+                        retryInput = _waiterView.GetYesOrNoAnswer();
+                    }
+                }
+                else
+                {
+                    break;
+                }
+            } while (retryInput == "да");
+        }
+
+        private bool ShowCurrentUnpaidOrders(WorkerDTO worker)
+        {
+            try
+            {
+                var unpaidOrders = _waiterService.GetCurrentUnpaidOrders(worker);
+                _waiterView.PrintOrders(unpaidOrders, "Не оплаченные заказы:");
+                return unpaidOrders.Count() == 0 ? false : true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка при получении текущих заказов + {ex.Message}");
+                throw;
+            }
+        }
+
+        private void AcceptPayment(WorkerDTO worker)
+        {
+            string retryInput = "да";
+            do
+            {
+                // если нет заказов
+                if (ShowCurrentUnpaidOrders(worker))
+                {
+                    int selectedOrder = HelperUI.GetSelectedOrderWithMessage("Введите номер заказа, чтобы принять оплату: ");
+                    PaymentMethod paymentMethod = _waiterView.GetPaymentMethod();
+                    
+                    try
+                    {
+                        _waiterService.AcceptPaymentForOrder(selectedOrder, paymentMethod);
+                        Console.WriteLine("\nЗаказ успешно оплачен.");
+                        retryInput = "нет";
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("\nОшибка при оплате заказа. " + ex.Message);
+                        retryInput = _waiterView.GetYesOrNoAnswer();
+                    }
+                }
+                else
+                {
+                    break;
+                }
+            } while (retryInput == "да");
         }
     }
 }

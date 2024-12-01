@@ -4,7 +4,7 @@ using AutoMapper;
 using BLL.ServiceInterfaces.LogicInterfaces;
 using BLL.ServiceInterfaces.DTOs;
 
-namespace BLL.Services
+namespace BLL.Services.LogicServices
 {
     internal class AuthService : IAuthService
     {

@@ -5,7 +5,7 @@ using BLL.ServiceInterfaces.ValidatorInterfaces;
 using DAL.Entities;
 using DAL.Interfaces;
 
-namespace BLL.Services
+namespace BLL.Services.LogicServices
 {
     internal class CookService : ICookService
     {
@@ -36,35 +36,7 @@ namespace BLL.Services
                 return new List<OrderDTO>(); // Если заказов нет, возвращаем пустой список
             }
 
-            var orderItems = _orderItemRepository.GetAll().ToList();
-            var dishes = _dishRepository.GetAll().ToList();
-
-            // маппинг заказов в DTO с прокинутыми в свойства объектами
-            var availableOrdersWithItems = availableOrders.Select(order =>
-            {
-                // orderDTO
-                var orderDto = _mapper.Map<OrderDTO>(order);
-
-                // Получаем позиции заказа для текущего заказа
-                var orderItemsForOrder = orderItems.Where(item => item.OrderId == order.Id).ToList();
-
-                // по orders_items ам проходимся
-                var orderItemsWithDish = orderItemsForOrder.Select(orderItem =>
-                {
-                    var orderItemDto = _mapper.Map<OrderItemDTO>(orderItem);
-
-                    // Находим блюдо для позиции заказа
-                    var dish = dishes.FirstOrDefault(d => d.Id == orderItem.DishId);
-                    orderItemDto.Dish = _mapper.Map<DishDTO>(dish); // добавляем блюдо в DishDTO
-
-                    return orderItemDto;
-                }).ToList();
-
-                orderDto.Items = orderItemsWithDish;
-                return orderDto;
-            }).ToList();
-
-            return availableOrdersWithItems;
+            return GetAvailableOrdersWithItems(availableOrders);
         }
 
         public void TakeAnOrder(int selectedOrder, WorkerDTO cook)
@@ -100,35 +72,7 @@ namespace BLL.Services
                 return new List<OrderDTO>(); // Если заказов нет, возвращаем пустой список
             }
 
-            var orderItems = _orderItemRepository.GetAll().ToList();
-            var dishes = _dishRepository.GetAll().ToList();
-
-            // маппинг заказов в DTO с прокинутыми в свойства объектами
-            var currentOrdersWithItems = currentOrders.Select(order =>
-            {
-                // orderDTO
-                var orderDto = _mapper.Map<OrderDTO>(order);
-
-                // Получаем позиции заказа для текущего заказа
-                var orderItemsForOrder = orderItems.Where(item => item.OrderId == order.Id).ToList();
-
-                // по orders_items ам проходимся
-                var orderItemsWithDish = orderItemsForOrder.Select(orderItem =>
-                {
-                    var orderItemDto = _mapper.Map<OrderItemDTO>(orderItem);
-
-                    // Находим блюдо для позиции заказа
-                    var dish = dishes.FirstOrDefault(d => d.Id == orderItem.DishId);
-                    orderItemDto.Dish = _mapper.Map<DishDTO>(dish); // добавляем блюдо в DishDTO
-
-                    return orderItemDto;
-                }).ToList();
-
-                orderDto.Items = orderItemsWithDish;
-                return orderDto;
-            }).ToList();
-
-            return currentOrdersWithItems;
+            return GetAvailableOrdersWithItems(currentOrders);
         }
 
         public void MarkOrderAsCooked(int orderNumber)
@@ -178,6 +122,39 @@ namespace BLL.Services
             }).ToList();
 
             return recipesWithItems;
+        }
+
+        private List<OrderDTO> GetAvailableOrdersWithItems(List<Order> orders)
+        {
+            var orderItems = _orderItemRepository.GetAll().ToList();
+            var dishes = _dishRepository.GetAll().ToList();
+
+            // маппинг заказов в DTO с прокинутыми в свойства объектами
+            var currentOrdersWithItems = orders.Select(order =>
+            {
+                // orderDTO
+                var orderDto = _mapper.Map<OrderDTO>(order);
+
+                // Получаем позиции заказа для текущего заказа
+                var orderItemsForOrder = orderItems.Where(item => item.OrderId == order.Id).ToList();
+
+                // по orders_items ам проходимся
+                var orderItemsWithDish = orderItemsForOrder.Select(orderItem =>
+                {
+                    var orderItemDto = _mapper.Map<OrderItemDTO>(orderItem);
+
+                    // Находим блюдо для позиции заказа
+                    var dish = dishes.FirstOrDefault(d => d.Id == orderItem.DishId);
+                    orderItemDto.Dish = _mapper.Map<DishDTO>(dish); // добавляем блюдо в DishDTO
+
+                    return orderItemDto;
+                }).ToList();
+
+                orderDto.Items = orderItemsWithDish;
+                return orderDto;
+            }).ToList();
+
+            return currentOrdersWithItems;
         }
     }
 }

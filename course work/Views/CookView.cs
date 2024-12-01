@@ -45,12 +45,6 @@ namespace course_work.Views
             }
         }
 
-        //internal int GetSelectedOrderWithMessage(string message)
-        //{
-        //    Console.WriteLine(message);
-        //    return Validator.GetValidInteger("Введите числовое значение: ");
-        //}
-
         internal string GetYesOrNoAnswer()
         {
             string retryInput = "";

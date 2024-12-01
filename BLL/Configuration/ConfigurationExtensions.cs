@@ -5,6 +5,7 @@ using BLL.ServiceInterfaces.LogicInterfaces;
 using BLL.ServiceInterfaces.ValidatorInterfaces;
 using BLL.ServiceInterfaces.ValidatorsInterfaces;
 using BLL.Services;
+using BLL.Services.LogicServices;
 using BLL.Services.Validators;
 using BLL.Services.ValidatorsServices;
 using DAL.Configuration;
@@ -31,9 +32,9 @@ namespace BLL.Configuration
             );
 
             // сервисы
-            services.AddTransient<IClientService, ClientService>(); // с клиентами работает clientService
+            //services.AddTransient<IClientService, ClientService>(); // с клиентами работает clientService
             services.AddTransient<IRoleService, RoleService>();
-            services.AddTransient<IWorkerService, WorkerService>();
+            //services.AddTransient<IWorkerService, WorkerService>();
             services.AddTransient<IAuthService, AuthService>();
             services.AddTransient<IClientInteractionService, ClientInteractionService>();
             services.AddTransient<ICookService, CookService>();
