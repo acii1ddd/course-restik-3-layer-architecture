@@ -6,7 +6,7 @@ using DAL.Entities;
 
 namespace course_work.Handlers
 {
-    public class WaiterHandler
+    internal class WaiterHandler
     {
         private readonly IWaiterService _waiterService;
         private readonly WaiterView _waiterView;

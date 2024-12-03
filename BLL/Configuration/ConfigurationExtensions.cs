@@ -39,6 +39,7 @@ namespace BLL.Configuration
             services.AddTransient<IClientInteractionService, ClientInteractionService>();
             services.AddTransient<ICookService, CookService>();
             services.AddTransient<IWaiterService, WaiterService>();
+            services.AddTransient<IAdminService, AdminService>();
 
             // validators
             services.AddTransient<IClientValidatorService, ClientValidatorService>();

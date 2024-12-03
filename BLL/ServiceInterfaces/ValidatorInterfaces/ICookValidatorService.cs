@@ -4,10 +4,9 @@ namespace BLL.ServiceInterfaces.ValidatorInterfaces
 {
     public interface ICookValidatorService
     {
+        public OrderDTO GetValidOrderByNumber(int orderNumber);
 
-        public OrderDTO ValidateOrderByNumber(int orderNumber);
-
-        public OrderDTO ValidateOrderByNumberToMark(int orderNumber);
+        public OrderDTO GetValidOrderByNumberToMarkAsCooked(int orderNumber);
 
         public void ValidateCook(WorkerDTO worker);
 

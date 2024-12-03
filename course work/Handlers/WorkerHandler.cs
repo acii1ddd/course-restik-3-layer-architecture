@@ -21,7 +21,8 @@ namespace course_work.Handlers
                     cookHandler.HandleCook(worker);
                     break;
                 case "admin":
-                    AdminHandler.HandleAdmin(worker, provider);
+                    AdminHandler adminHandler = new AdminHandler(provider);
+                    adminHandler.HandleAdmin(worker);
                     break;
             }
         }

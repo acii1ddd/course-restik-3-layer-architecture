@@ -1,7 +1,6 @@
 ﻿using BLL.DTO;
 using BLL.ServiceInterfaces.ValidatorsInterfaces;
 using ConsoleTables;
-using DAL.Entities;
 
 namespace course_work.Views
 {

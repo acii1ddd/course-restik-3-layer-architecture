@@ -38,7 +38,7 @@ namespace course_work.Handlers
                         ProcessOrder(client);
                         break;
                     case 3:
-                        ShowOrderStatus(client);
+                        ShowClientOrders(client);
                         break;
                     case 0:
                         isLeave = true;
@@ -90,7 +90,7 @@ namespace course_work.Handlers
             } while (retryInput == "да");
         }
 
-        public void ShowOrderStatus(ClientDTO client)
+        public void ShowClientOrders(ClientDTO client)
         {
             try
             {

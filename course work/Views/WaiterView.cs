@@ -75,7 +75,7 @@ namespace course_work.Views
             {
                 Console.WriteLine("1. Наличные");
                 Console.WriteLine("2. Карта");
-                Console.WriteLine("Выберите способ оплаты заказа:");
+                Console.Write("Выберите способ оплаты заказа: ");
 
                 int input = Validator.GetValidInteger("Введите числовое значение: ");
 

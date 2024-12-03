@@ -19,22 +19,15 @@ namespace DAL.PostgresRepositories
             {
                 connection.Open();
                 var query = "INSERT INTO orders (client_id, table_number) " +
-                    "values (@client_id, @table_number) RETURNING id, date";
+                    "values (@client_id, @table_number) RETURNING id";
 
                 using (var command = new NpgsqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@client_id", entity.ClientId);
                     command.Parameters.AddWithValue("@table_number", entity.TableNumber);
 
-                    using (var reader = command.ExecuteReader())
-                    {
-                        if (reader.Read())
-                        {
-                            entity.Id = reader.GetInt32(0); // id в бд соответствует id объекта (так как returnings id)
-                            //DateTime utcDate = reader.GetDateTime(1); // в бд хранится utc время
-                            //entity.Date = utcDate.ToLocalTime(); // преобразуем в локальное время
-                        }
-                    }
+                    var id = Convert.ToInt32(command.ExecuteScalar()); // так как returnings id
+                    entity.Id = id; // id в бд соответствует id объекта
                 }
             }
         }
@@ -142,7 +135,9 @@ namespace DAL.PostgresRepositories
                     command.Parameters.AddWithValue("@client_id", entity.ClientId);
                     // конверт к utc
                     command.Parameters.AddWithValue("@date", entity.Date);
-                    command.Parameters.AddWithValue("@total_cost", entity.TotalCost ?? (object)DBNull.Value); // явный null в ячейку для базы данных
+
+                    // явный null в ячейку для базы данных, так как total_cost может иметь значение null - decimal?
+                    command.Parameters.AddWithValue("@total_cost", entity.TotalCost ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@status", entity.Status.ToString());
                     command.Parameters.AddWithValue("@payment_status", entity.PaymentStatus.ToString());
                     command.Parameters.AddWithValue("@waiter_id", entity.WaiterId ?? (object)DBNull.Value);

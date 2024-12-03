@@ -44,12 +44,8 @@ namespace BLL.Services.LogicServices
             _cookValidatorService.ValidateTakeOrder(selectedOrder, cook);
 
             // получаем OrderDTO заказа по номеру, который ввел повар (в том что номер валиден убедились выше)
-            var orderToTakeDTO = _cookValidatorService.ValidateOrderByNumber(selectedOrder);
-
-            // получаем этот же order из базы данных
-            var orderToTake = _orderRepository
-                .GetAll()
-                .FirstOrDefault(or => or.Id == orderToTakeDTO.Id);
+            var orderToTakeDTO = _cookValidatorService.GetValidOrderByNumber(selectedOrder);
+            var orderToTake = _mapper.Map<Order>(orderToTakeDTO); // маппим к обычному order
 
             orderToTake.Status = OrderStatus.IsCooking;
             orderToTake.CookId = cook.Id;
@@ -78,12 +74,8 @@ namespace BLL.Services.LogicServices
         public void MarkOrderAsCooked(int orderNumber)
         {
             // получаем OrderDTO по номеру заказа, если он валиден
-            var orderToMarkDto = _cookValidatorService.ValidateOrderByNumberToMark(orderNumber);
-
-            // получаем этот же order из базы данных
-            var orderToMark = _orderRepository
-                .GetAll()
-                .FirstOrDefault(or => or.Id == orderToMarkDto.Id);
+            var orderToMarkDto = _cookValidatorService.GetValidOrderByNumberToMarkAsCooked(orderNumber);
+            var orderToMark = _mapper.Map<Order>(orderToMarkDto);
 
             orderToMark.Status = OrderStatus.Cooked;
             _orderRepository.Update(orderToMark);
@@ -100,8 +92,10 @@ namespace BLL.Services.LogicServices
         {
             var dish = _cookValidatorService.ValidateDishByNumber(dishNumber);
 
-            var recipes = _recipeRepository.GetAll()
-            .Where(r => r.DishId == dish.Id).ToList(); // строки, которые относятся к рецепту нашего блюда
+            var recipes = _recipeRepository
+                .GetAll()
+                .Where(r => r.DishId == dish.Id)
+                .ToList(); // строки, которые относятся к рецепту нашего блюда
 
             var ingredients = _ingredientRepository.GetAll().ToList();
 

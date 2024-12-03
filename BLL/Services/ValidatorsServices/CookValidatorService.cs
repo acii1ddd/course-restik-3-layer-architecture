@@ -21,22 +21,22 @@ namespace BLL.Services.ValidatorsServices
             _mapper = mapper;
         }
 
-        public OrderDTO ValidateOrderByNumber(int orderNumber)
+        public OrderDTO GetValidOrderByNumber(int orderNumber)
         {
             var availableOrders = _orderRepository.GetAll()
                 .Where(or => or.Status == OrderStatus.InProcessing)
                 .ToList();
 
-            if (availableOrders == null || !availableOrders.Any())
-            {
-                throw new InvalidOperationException("Нет доступных заказов для выполнения.");
-            }
+            return GetValidOrderByNumberFromList(availableOrders, orderNumber);
+        }
 
-            if (orderNumber > availableOrders.Count() || orderNumber <= 0)
-            {
-                throw new ArgumentException($"Заказ с id {orderNumber} недоступен");
-            }
-            return _mapper.Map<OrderDTO>(availableOrders[orderNumber - 1]);
+        public OrderDTO GetValidOrderByNumberToMarkAsCooked(int orderNumber)
+        {
+            var availableOrders = _orderRepository.GetAll()
+                .Where(or => or.Status == OrderStatus.IsCooking)
+                .ToList();
+
+            return GetValidOrderByNumberFromList(availableOrders, orderNumber);
         }
 
         public void ValidateCook(WorkerDTO worker)
@@ -47,24 +47,6 @@ namespace BLL.Services.ValidatorsServices
             {
                 throw new InvalidOperationException($"Повар с Id {worker.Id} не найден.");
             }
-        }
-
-        public OrderDTO ValidateOrderByNumberToMark(int orderNumber)
-        {
-            var availableOrders = _orderRepository.GetAll()
-                .Where(or => or.Status == OrderStatus.IsCooking)
-                .ToList();
-
-            if (availableOrders == null || !availableOrders.Any())
-            {
-                throw new InvalidOperationException("Нет доступных заказов для выполнения.");
-            }
-
-            if (orderNumber > availableOrders.Count() || orderNumber <= 0)
-            {
-                throw new ArgumentException($"Заказ с id {orderNumber} недоступен");
-            }
-            return _mapper.Map<OrderDTO>(availableOrders[orderNumber - 1]);
         }
 
         public DishDTO ValidateDishByNumber(int dishNumber)
@@ -79,8 +61,22 @@ namespace BLL.Services.ValidatorsServices
 
         public void ValidateTakeOrder(int selectedOrder, WorkerDTO cook)
         {
-            ValidateOrderByNumber(selectedOrder);
+            GetValidOrderByNumber(selectedOrder);
             ValidateCook(cook);
+        }
+
+        private OrderDTO GetValidOrderByNumberFromList(List<Order> orders, int orderNumber)
+        {
+            if (orders == null || !orders.Any())
+            {
+                throw new InvalidOperationException("Нет доступных заказов для выполнения.");
+            }
+
+            if (orderNumber > orders.Count() || orderNumber <= 0)
+            {
+                throw new ArgumentException($"Заказ с id {orderNumber} недоступен");
+            }
+            return _mapper.Map<OrderDTO>(orders[orderNumber - 1]);
         }
     }
 }

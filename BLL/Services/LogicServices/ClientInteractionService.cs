@@ -30,7 +30,7 @@ namespace BLL.Services.LogicServices
             {
                 _clientValidator.IsOrderValid(selectedDishes, clientId, tableNumber);
 
-                // если заказ валиден для создания - добавляем его в бд
+                // если заказ валиден для создания - добавляем его в бд // total_cost при создании - null, а не 0, так как оно nullable decimal? 
                 var order = new Order
                 {
                     ClientId = clientId.Id,
@@ -74,7 +74,12 @@ namespace BLL.Services.LogicServices
                 .Where(order => order.ClientId == client.Id)
                 .ToList();
 
-            if (clientOrders == null || !clientOrders.Any()) // any - нет элементов
+            return GetOrdersWithItems(clientOrders);
+        }
+
+        public List<OrderDTO> GetOrdersWithItems(List<Order> orders)
+        {
+            if (orders == null || !orders.Any()) // any - нет элементов
             {
                 return new List<OrderDTO>(); // Если заказов нет, возвращаем пустой список
             }
@@ -83,7 +88,7 @@ namespace BLL.Services.LogicServices
             var dishes = _dishRepository.GetAll().ToList();
 
             // маппинг заказов в DTO с прокинутыми в свойства объектами
-            var ordersWithItems = clientOrders.Select(order =>
+            var ordersWithItems = orders.Select(order =>
             {
                 // orderDTO
                 var orderDto = _mapper.Map<OrderDTO>(order);

@@ -4,14 +4,14 @@ namespace BLL.ServiceInterfaces.ValidatorInterfaces
 {
     public interface IWaiterValidatorService
     {
-        public OrderDTO ValidateOrderByNumber(int orderNumber);
+        public OrderDTO GetValidOrderByNumber(int orderNumber);
 
-        public OrderDTO ValidateOrderByNumberToMark(int orderNumber);
+        public OrderDTO GetValidOrderByNumberToMarkAsDelivered(int orderNumber);
 
-        public void ValidateWaiter(WorkerDTO worker);
+        public OrderDTO GetValidOrderByNumberToAcceptPayment(int orderNumber);
 
         public void ValidateTakeOrder(int selectedOrder, WorkerDTO cook);
 
-        public OrderDTO ValidateOrderByNumberToAcceptPayment(int orderNumber);
+        public void ValidateWaiter(WorkerDTO worker);
     }
 }

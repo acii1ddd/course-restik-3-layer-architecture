@@ -21,65 +21,38 @@ namespace BLL.Services.ValidatorsServices
             _mapper = mapper;
         }
 
-        public OrderDTO ValidateOrderByNumber(int orderNumber)
+        public OrderDTO GetValidOrderByNumber(int orderNumber)
         {
             var availableOrders = _orderRepository.GetAll()
                 .Where(or => or.Status == OrderStatus.Cooked)
                 .ToList();
 
-            if (availableOrders == null || !availableOrders.Any())
-            {
-                throw new InvalidOperationException("Нет доступных заказов для выполнения.");
-            }
-
-            if (orderNumber > availableOrders.Count() || orderNumber <= 0)
-            {
-                throw new ArgumentException($"Заказ с id {orderNumber} недоступен");
-            }
-            return _mapper.Map<OrderDTO>(availableOrders[orderNumber - 1]);
+            return GetValidOrderByNumberFromList(availableOrders, orderNumber);
         }
 
-        public OrderDTO ValidateOrderByNumberToMark(int orderNumber)
+        public OrderDTO GetValidOrderByNumberToMarkAsDelivered(int orderNumber)
         {
             var availableOrders = _orderRepository.GetAll()
                 .Where(or => or.Status == OrderStatus.InDelivery)
                 .ToList();
 
-            if (availableOrders == null || !availableOrders.Any())
-            {
-                throw new InvalidOperationException("Нет доступных заказов для выполнения.");
-            }
-
-            if (orderNumber > availableOrders.Count() || orderNumber <= 0)
-            {
-                throw new ArgumentException($"Заказ с id {orderNumber} недоступен");
-            }
-            return _mapper.Map<OrderDTO>(availableOrders[orderNumber - 1]);
+            return GetValidOrderByNumberFromList(availableOrders, orderNumber);
         }
 
-        public OrderDTO ValidateOrderByNumberToAcceptPayment(int orderNumber)
+        public OrderDTO GetValidOrderByNumberToAcceptPayment(int orderNumber)
         {
             var availableOrders = _orderRepository.GetAll()
                 .Where(or => or.Status == OrderStatus.Delivered && or.PaymentStatus == PaymentStatus.Unpaid)
                 .ToList();
 
-            if (availableOrders == null || !availableOrders.Any())
-            {
-                throw new InvalidOperationException("Нет доступных заказов для приятия оплаты.");
-            }
+            var orderToAcceptPayment = GetValidOrderByNumberFromList(availableOrders,orderNumber);
 
-            if (orderNumber > availableOrders.Count() || orderNumber <= 0)
-            {
-                throw new ArgumentException($"Заказ с id {orderNumber} недоступен");
-            }
-
-            var orderToAcceptPayment = availableOrders[orderNumber - 1];
             if (orderToAcceptPayment.Status != OrderStatus.Delivered && orderToAcceptPayment.PaymentStatus != PaymentStatus.Paid)
             {
                 throw new InvalidOperationException($"Заказ с Id {orderToAcceptPayment.Id} не может быть оплачен, так как его статус.");
             }
 
-            return _mapper.Map<OrderDTO>(orderToAcceptPayment);
+            return orderToAcceptPayment;
         }
 
         public void ValidateWaiter(WorkerDTO worker)
@@ -94,8 +67,22 @@ namespace BLL.Services.ValidatorsServices
 
         public void ValidateTakeOrder(int selectedOrder, WorkerDTO cook)
         {
-            ValidateOrderByNumber(selectedOrder);
+            GetValidOrderByNumber(selectedOrder);
             ValidateWaiter(cook);
+        }
+
+        private OrderDTO GetValidOrderByNumberFromList(List<Order> orders, int orderNumber)
+        {
+            if (orders == null || !orders.Any())
+            {
+                throw new InvalidOperationException("Нет доступных заказов для выполнения.");
+            }
+
+            if (orderNumber > orders.Count() || orderNumber <= 0)
+            {
+                throw new ArgumentException($"Заказ с id {orderNumber} недоступен");
+            }
+            return _mapper.Map<OrderDTO>(orders[orderNumber - 1]);
         }
     }
 }

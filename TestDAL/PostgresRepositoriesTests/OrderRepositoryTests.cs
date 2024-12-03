@@ -256,7 +256,7 @@ namespace TestDAL.PostgresRepositoriesTests
             var order = new Order
             {
                 ClientId = 1,
-                TableNumber = 4,
+                TableNumber = 4
             };
             _orderRepository.Add(order);
 
