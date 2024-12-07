@@ -15,10 +15,20 @@ namespace course_work
                                                               // optional: false - файл appsettings.json обязателен reloadOnChange:true - обновлять конфигурацию при изменении файла.
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .Build();
-
-            var postgresConnection = config.GetConnectionString("PostgresConnection") ?? throw new ArgumentNullException();
             var services = new ServiceCollection();
-            services.ConfigureBLL(postgresConnection);
+
+            var type = config["DbType:Type"]; // sql
+
+            if (type == "postgres")
+            {
+                var postgresConnection = config.GetConnectionString("PostgresConnection") ?? throw new ArgumentNullException();
+                services.ConfigureBLL(postgresConnection, type);
+            }
+            else if (type == "mongo")
+            {
+                var mongoConnection = config.GetConnectionString("MongoConnection") ?? throw new ArgumentNullException();
+                services.ConfigureBLL(mongoConnection, type);
+            }
 
             // получаем сервис для работы с клиентами
             var provider = services.BuildServiceProvider();

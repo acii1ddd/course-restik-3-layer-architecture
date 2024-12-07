@@ -10,5 +10,7 @@ namespace BLL.ServiceInterfaces.ValidatorInterfaces
         public WorkerRole GetRoleNameDescription(string roleName);
 
         public WorkerDTO GetValidWorkerByNumber(int workerNumber);
+
+        void ValidateGetOrdersForPeriod(DateTime startDate, DateTime endDate);
     }
 }

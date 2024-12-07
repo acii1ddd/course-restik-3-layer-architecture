@@ -70,5 +70,18 @@ namespace BLL.Services.ValidatorsServices
             }
             return _mapper.Map<WorkerDTO>(workers[workerNumber - 1]);
         }
+
+        public void ValidateGetOrdersForPeriod(DateTime startDate, DateTime endDate)
+        {
+            if (startDate > endDate)
+            {
+                throw new ArgumentException("Начальная дата не может быть позже конечной даты.");
+            }
+
+            if (startDate > DateTime.Now || endDate > DateTime.Now)
+            {
+                throw new ArgumentException("Извините, мы не видим будущее.");
+            }
+        }
     }
 }

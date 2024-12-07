@@ -9,8 +9,7 @@ namespace course_work.Views
         {
             Console.WriteLine("\nМеню администратора:");
             Console.WriteLine("1. Управление сотрудниками (просмотр, добавление, удаление)");
-            Console.WriteLine("2. Управление меню (добавление, удаление, редактирование блюд)");
-            Console.WriteLine("3. Просмотр статистики по заказам (все заказы за период, самые популярные блюда)");
+            Console.WriteLine("2. Просмотр статистики по заказам (все заказы за период, самые популярные блюда)");
             Console.WriteLine("0. Выход");
             Console.WriteLine("Сделайте выбор:");
         }
@@ -24,12 +23,11 @@ namespace course_work.Views
             Console.WriteLine("0. Назад");
         }
 
-        internal void ManageDishesMenu()
+        internal void ManageStatisticsMenu()
         {
             Console.WriteLine("\nУправление меню:");
-            Console.WriteLine("1. Просмотр меню блюд");
-            Console.WriteLine("2. Добавить блюдо");
-            Console.WriteLine("3. Удалить блюдо");
+            Console.WriteLine("1. Просмотр заказов за период");
+            Console.WriteLine("2. Просмотр самых популярных блюд");
             Console.WriteLine("0. Назад");
         }
 
@@ -51,11 +49,11 @@ namespace course_work.Views
         }
 
         // возаращает либо пустую строку, либо строку, подходящую по формату
-        internal DateTime GetValidHireDate()
+        internal DateTime GetValidDate(string message)
         {
             while (true)
             {
-                Console.Write("\nВведите дату найма (в формате ДД.ММ.ГГГГ) или нажмите Enter для установки текущей даты: ");
+                Console.Write(message);
                 string input = Console.ReadLine()?.Trim();
 
                 // если строка пустая, возвращаем текущую дату
@@ -73,5 +71,37 @@ namespace course_work.Views
                 Console.WriteLine("Неверный формат даты. Попробуйте снова.");
             }
         }
+
+        //internal void PrintOrders(List<OrderDTO> orders, string message)
+        //{
+        //    if (orders == null || orders.Count() == 0)
+        //    {
+        //        Console.WriteLine("Нет заказов по заданным параметрам.");
+        //        return;
+        //    }
+
+        //    Console.WriteLine("\n" + message);
+        //    for (int i = 0; i < orders.Count; i++)
+        //    {
+        //        string orderStatusDescription = HelperUI.GetOrderStatusDescription(orders[i].Status);
+        //        string paymentStatusDescription = HelperUI.GetPaymentStatusDescription(orders[i].PaymentStatus);
+        //        Console.WriteLine($"\nЗаказ {i + 1}. Клиент: {orders[i].Client.Name}, Столик: {orders[i].TableNumber}, Общая стоимость: {orders[i].TotalCost}, Статус: {orderStatusDescription}, Статус оплаты: {paymentStatusDescription} \nДата: {orders[i].Date.ToString("dd.MM.yyyy HH.mm")}");
+
+        //        var dishesTable = new ConsoleTable("№", "Имя блюда", "Количество", "Цена");
+
+        //        // по блюдам текущего заказа (по orderItem'ам)
+        //        for (int j = 0; j < orders[i].Items.Count; j++)
+        //        {
+        //            dishesTable.AddRow(
+        //                j + 1,
+        //                orders[i].Items[j].Dish.Name, // получ блюдо для вывода имени
+        //                orders[i].Items[j].Quantity, // у самого ordersItem'а
+        //                orders[i].Items[j].CurrDishPrice
+        //            );
+        //        }
+
+        //        dishesTable.Write(Format.Alternative);
+        //    }
+        //}
     }
 }

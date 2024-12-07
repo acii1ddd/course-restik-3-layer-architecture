@@ -61,7 +61,8 @@ namespace course_work.Handlers
         private bool ShowAvailableOrdersToDelivery()
         {
             var orders = _waiterService.GetAlailableOrdersToDelivery();
-            _waiterView.PrintOrders(orders, "Заказы, доступные для доставки:");
+            //_waiterView.PrintOrders(orders, "Заказы, доступные для доставки:");
+            HelperUI.PrintOrders(orders, "Заказы, доступные для доставки:", "Заказов пока еще нету.");
             return orders.Count() == 0 ? false : true;
         }
 
@@ -99,7 +100,9 @@ namespace course_work.Handlers
             try
             {
                 var currentOrders = _waiterService.GetCurrentOrders(worker);
-                _waiterView.PrintOrders(currentOrders, "Ваши текущие заказы:");
+                //_waiterView.PrintOrders(currentOrders, "Ваши текущие заказы:");
+                HelperUI.PrintOrders(currentOrders, "Ваши текущие заказы:", "Заказов пока еще нету.");
+
                 return currentOrders.Count() == 0 ? false : true;
             }
             catch (Exception ex)
@@ -115,7 +118,9 @@ namespace course_work.Handlers
             try
             {
                 var currentOrders = _waiterService.GetCurrentUndeliveredOrders(worker);
-                _waiterView.PrintOrders(currentOrders, "Заказы для доставки:");
+                //_waiterView.PrintOrders(currentOrders, "Заказы для доставки:");
+                HelperUI.PrintOrders(currentOrders, "Заказы для доставки:", "Заказов пока еще нету.");
+
                 return currentOrders.Count() == 0 ? false : true;
             }
             catch (Exception ex)
@@ -158,7 +163,9 @@ namespace course_work.Handlers
             try
             {
                 var unpaidOrders = _waiterService.GetCurrentUnpaidOrders(worker);
-                _waiterView.PrintOrders(unpaidOrders, "Не оплаченные заказы:");
+                //_waiterView.PrintOrders(unpaidOrders, "Не оплаченные заказы:");
+                HelperUI.PrintOrders(unpaidOrders, "Не оплаченные заказы:", "Заказов пока еще нету.");
+
                 return unpaidOrders.Count() == 0 ? false : true;
             }
             catch (Exception ex)

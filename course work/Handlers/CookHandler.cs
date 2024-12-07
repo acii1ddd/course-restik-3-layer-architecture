@@ -1,6 +1,7 @@
 ﻿using BLL.DTO;
 using BLL.ServiceInterfaces.LogicInterfaces;
 using course_work.Views;
+using DAL.Entities;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace course_work.Handlers
@@ -61,7 +62,8 @@ namespace course_work.Handlers
         private bool ShowAvailableOrders()
         {
             var orders = _cookService.GetAlailableOrders();
-            _cookView.PrintOrders(orders);
+            //_cookView.PrintOrders(orders);
+            HelperUI.PrintOrders(orders, "\nВсе заказы: ", "Заказов пока еще нету.");
             return orders.Count() == 0 ? false : true;
         }
 
@@ -98,7 +100,8 @@ namespace course_work.Handlers
             try
             {
                 var currentOrders = _cookService.GetCurrentOrders(worker);
-                _cookView.PrintOrders(currentOrders);
+                //_cookView.PrintOrders(currentOrders);
+                HelperUI.PrintOrders(currentOrders, "\nВсе заказы: ", "Заказов пока еще нету.");
                 return currentOrders.Count() == 0 ? false : true;
             }
             catch (Exception ex)

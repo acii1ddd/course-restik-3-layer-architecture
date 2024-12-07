@@ -10,7 +10,7 @@ namespace course_work.Views
         {
             Console.WriteLine("\n1. Просмотр меню блюд");
             Console.WriteLine("2. Совершение заказа");
-            Console.WriteLine("3. Просмотр ");
+            Console.WriteLine("3. Просмотр текущих заказов");
             Console.WriteLine("0. Выход");
             Console.WriteLine("Сделайте выбор:");
         }
@@ -32,37 +32,38 @@ namespace course_work.Views
             table.Write();
         }
 
-        public void PrintOrders(List<OrderDTO> currOrders)
-        {
-            if (currOrders == null || !currOrders.Any())
-            {
-                Console.WriteLine("У вас нет активных заказов.");
-                return;
-            }
+        //public void PrintOrders(List<OrderDTO> currOrders)
+        //{
+        //    if (currOrders == null || !currOrders.Any())
+        //    {
+        //        Console.WriteLine("У вас нет активных заказов.");
+        //        return;
+        //    }
 
-            for (int i = 0; i < currOrders.Count; i++)
-            {
-                string statusDescription = HelperUI.GetOrderStatusDescription(currOrders[i].Status);
-                string paymentStatusDescription = HelperUI.GetPaymentStatusDescription(currOrders[i].PaymentStatus);
-                Console.WriteLine($"\nЗаказ {i + 1}. (Дата: {currOrders[i].Date}, Столик: {currOrders[i].TableNumber}, Общая стоимость: {currOrders[i].TotalCost}, Статус: {statusDescription}, Статус оплаты: {paymentStatusDescription})");
+        //    for (int i = 0; i < currOrders.Count; i++)
+        //    {
+        //        string statusDescription = HelperUI.GetOrderStatusDescription(currOrders[i].Status);
+        //        string paymentStatusDescription = HelperUI.GetPaymentStatusDescription(currOrders[i].PaymentStatus);
+        //        Console.WriteLine($"\nЗаказ {i + 1}. (Дата: {currOrders[i].Date}, Столик: {currOrders[i].TableNumber}, Общая стоимость: {currOrders[i].TotalCost}, Статус: {statusDescription}, Статус оплаты: {paymentStatusDescription})");
 
-                var dishesTable = new ConsoleTable("№", "Имя блюда", "Цена за единицу", "Количество", "Итоговая стоимость");
+        //        var dishesTable = new ConsoleTable("№", "Имя блюда", "Цена за единицу", "Количество", "Итоговая стоимость");
 
-                // по блюдам текущего заказа (по orderItem'ам)
-                for (int j = 0; j < currOrders[i].Items.Count; j++)
-                {
-                    dishesTable.AddRow(
-                        j + 1,
-                        currOrders[i].Items[j].Dish.Name, // получ блюдо для вывода имени
-                        currOrders[i].Items[j].CurrDishPrice,
-                        currOrders[i].Items[j].Quantity, // у самого ordersItem'а
-                        currOrders[i].Items[j].TotalDishPrice
-                    );
-                }
+        //        // по блюдам текущего заказа (по orderItem'ам)
+        //        for (int j = 0; j < currOrders[i].Items.Count; j++)
+        //        {
+        //            dishesTable.AddRow(
+        //                j + 1,
+        //                currOrders[i].Items[j].Dish.Name, // получ блюдо для вывода имени
+        //                currOrders[i].Items[j].CurrDishPrice,
+        //                currOrders[i].Items[j].Quantity, // у самого ordersItem'а
+        //                currOrders[i].Items[j].TotalDishPrice
+        //            );
+        //        }
 
-                dishesTable.Write(Format.Alternative);
-            }
-        }
+        //        dishesTable.Write(Format.Alternative);
+        //    }
+        //}
+
         private enum DishIdInputStatus
         {
             FinishedInput = 200,

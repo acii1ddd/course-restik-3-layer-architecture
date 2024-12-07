@@ -14,15 +14,19 @@ namespace BLL.Services.LogicServices
         private readonly IOrderRepository _orderRepository;
         private readonly IRoleRepository _roleRepository;
         private readonly IAdminValidatorService _adminValidatorService;
+        private readonly IOrderItemRepository _orderItemRepository;
+        private readonly IClientRepository _clientRepository;
         private IMapper _mapper;
 
-        public AdminService(IWorkerRepository workerRepository, IDishRepository dishRepository, IOrderRepository orderRepository, IRoleRepository roleRepository, IAdminValidatorService adminValidatorService, IMapper mapper)
+        public AdminService(IWorkerRepository workerRepository, IDishRepository dishRepository, IOrderRepository orderRepository, IRoleRepository roleRepository, IAdminValidatorService adminValidatorService, IOrderItemRepository orderItemRepository, IClientRepository clientRepository, IMapper mapper)
         {
             _workerRepository = workerRepository;
             _dishRepository = dishRepository;
             _orderRepository = orderRepository;
             _roleRepository = roleRepository;
             _adminValidatorService = adminValidatorService;
+            _orderItemRepository = orderItemRepository;
+            _clientRepository = clientRepository;
             _mapper = mapper;
         }
 
@@ -62,6 +66,108 @@ namespace BLL.Services.LogicServices
             var workerToDelete = _mapper.Map<Worker>(workerToDeleteDto);
 
             _workerRepository.Delete(workerToDelete);
+        }
+
+        // пустой List<OrderDTO> если нет подходящих заказов, если есть - лист с этими заказами
+        public List<OrderDTO> GetOrdersForPeriod(DateTime startDate, DateTime endDate)
+        {
+            // если даты валидны - получаем список заказов за период, иначе exception
+            _adminValidatorService.ValidateGetOrdersForPeriod(startDate, endDate);
+            
+            // если даты равны - получаем заказы просто за эту дату
+            if (startDate == endDate)
+            {
+                return GetOrdersWithItems(
+                    _orderRepository
+                        .GetAll()
+                        .Where(or => or.Date.Date == startDate.Date)
+                        .ToList()
+                );
+            }
+            // если даты не равны - получаем заказы за период
+            else
+            {
+                return GetOrdersWithItems(
+                    _orderRepository
+                        .GetAll()
+                        .Where(or => or.Date.Date >= startDate.Date && or.Date.Date <= endDate)
+                        .ToList()
+                );
+            }
+        }
+
+        // этот метод и в adminService и в waiterService и в cookService и в ClientInteractionService
+        private List<OrderDTO> GetOrdersWithItems(List<Order> orders)
+        {
+            if (orders == null || !orders.Any()) // any - нет элементов
+            {
+                return new List<OrderDTO>(); // Если заказов нет, возвращаем пустой список
+            }
+
+            var orderItems = _orderItemRepository.GetAll().ToList(); // total_cost обновиться триггером из базы данных
+            var dishes = _dishRepository.GetAll().ToList();
+            var clients = _clientRepository.GetAll().ToList();
+
+            // маппинг заказов в DTO с прокинутыми в свойства объектами
+            var availableOrdersWithItems = orders.Select(order =>
+            {
+                // orderDTO
+                var orderDto = _mapper.Map<OrderDTO>(order);
+
+                // Находим клиента, который сделал заказ
+                var client = clients.FirstOrDefault(c => c.Id == order.ClientId);
+                orderDto.Client = _mapper.Map<ClientDTO>(client); // прокидываем клиента в OrderDTO
+
+                // Получаем позиции заказа для текущего заказа
+                var orderItemsForOrder = orderItems.Where(item => item.OrderId == order.Id).ToList();
+
+                // по orders_items ам проходимся
+                var orderItemsWithDish = orderItemsForOrder.Select(orderItem =>
+                {
+                    var orderItemDto = _mapper.Map<OrderItemDTO>(orderItem);
+
+                    // Находим блюдо для позиции заказа
+                    var dish = dishes.FirstOrDefault(d => d.Id == orderItem.DishId);
+                    orderItemDto.Dish = _mapper.Map<DishDTO>(dish); // добавляем блюдо в DishDTO
+
+                    return orderItemDto;
+                }).ToList();
+
+                orderDto.Items = orderItemsWithDish;
+                return orderDto;
+            }).ToList();
+
+            return availableOrdersWithItems;
+        }
+
+        public List<DishDTO> GetTheMostPopularDishes()
+        {
+            // позиции блюд всех вообще заказов
+            var orderItems = _orderItemRepository.GetAll().ToList();
+            var dishes = _dishRepository.GetAll().ToList();
+
+            // Группируем позиции заказа по блюду и подсчитываем их количество
+            var popularDishes = orderItems
+                .GroupBy(item => item.DishId) // группируем по dish_id
+                .Select(group => new // для каждой группы берем dish_id и кол-во в этой группе
+                {
+                    DishId = group.Key,
+                    Count = group.Count()
+                })
+                .OrderByDescending(d => d.Count) // сортируем по убываию количеств в группе
+                .Take(2) // самые популярные блюда
+                .ToList();
+
+            // маппинг популярных блюд в DTO
+            var popularDishDtos = popularDishes // DishId, Count в popularDishes
+                .Select(pd =>
+                {
+                    var dish = dishes.FirstOrDefault(d => d.Id == pd.DishId);
+                    return _mapper.Map<DishDTO>(dish);
+                })
+                .ToList();
+
+            return popularDishDtos;
         }
     }
 }

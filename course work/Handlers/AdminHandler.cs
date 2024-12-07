@@ -1,7 +1,6 @@
 ﻿using BLL.DTO;
 using BLL.ServiceInterfaces.LogicInterfaces;
 using course_work.Views;
-using DAL.Entities;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace course_work.Handlers
@@ -34,10 +33,7 @@ namespace course_work.Handlers
                         ManageWorkers();
                         break;
                     case 2:
-                        ManageDishes();
-                        break;
-                    case 3:
-                        //MarkOrderAsCooked(worker);
+                        ManageStatistics();
                         break;
                     case 0:
                         isLeave = true;
@@ -106,7 +102,7 @@ namespace course_work.Handlers
             string phoneNumber = Validator.GetNonEmptyInput("Введите номер телефона: ");
 
             // Получение даты найма
-            DateTime hireDate = _adminView.GetValidHireDate();
+            DateTime hireDate = _adminView.GetValidDate("\nВведите дату найма (в формате ДД.ММ.ГГГГ) или нажмите Enter для установки текущей даты: ");
 
             string fullName = Validator.GetNonEmptyInput("Введите имя сотрудника: ");
 
@@ -149,22 +145,19 @@ namespace course_work.Handlers
             } while (retryInput == "да");
         }
 
-        private void ManageDishes()
+        private void ManageStatistics()
         {
             while (true)
             {
-                _adminView.ManageDishesMenu();
+                _adminView.ManageStatisticsMenu();
                 int choice = Validator.GetValidInteger("Сделайте выбор:");
                 switch (choice)
                 {
                     case 1:
-                        ShowAllDishes();
+                        GetOrdersForPeriod();
                         break;
                     case 2:
-                        //AddWorker();
-                        break;
-                    case 3:
-                        //RemoveWorker();
+                        GetMostPopularDishes();
                         break;
                     case 0:
                         return;
@@ -175,9 +168,33 @@ namespace course_work.Handlers
             }
         }
 
-        private void ShowAllDishes()
+        private void GetOrdersForPeriod()
         {
-            Console.WriteLine("Вывод всех блюд");
+            DateTime startDate = _adminView.GetValidDate("\nВведите начальную дату (в формате ДД.ММ.ГГГГ) или нажмите Enter для установки текущей даты: ");
+            DateTime endDate = _adminView.GetValidDate("Введите конечную дату (в формате ДД.ММ.ГГГГ) или нажмите Enter для установки текущей даты: ");
+            // даты сто проц введены
+            try
+            {
+                var ordersForPeriod = _adminService.GetOrdersForPeriod(startDate, endDate);
+                HelperUI.PrintOrders(ordersForPeriod, $"Все заказы с {startDate.Date} до {endDate.Date}", "Нет заказов по заданным параметрам.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+        private void GetMostPopularDishes()
+        {
+            try
+            {
+                var mostPopularDishes = _adminService.GetTheMostPopularDishes();
+                HelperUI.PrintDishes(mostPopularDishes, "2 самых популырных блюда", "Нет самых популярных блюд");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
     }
 }

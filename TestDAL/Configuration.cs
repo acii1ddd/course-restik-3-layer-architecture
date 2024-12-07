@@ -17,7 +17,7 @@ namespace TestDAL
             _testPostgresConnectionString = config.GetConnectionString("TestPostgres") ?? throw new InvalidOperationException("Строка подключения для TestPostgres не найдена в конфигурации.");
 
             var services = new ServiceCollection();
-            services.ConfigureDAL(_testPostgresConnectionString);
+            services.ConfigureDAL(_testPostgresConnectionString, "postgres");
 
             return services.BuildServiceProvider();
         }
