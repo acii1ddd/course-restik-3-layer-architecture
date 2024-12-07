@@ -73,7 +73,7 @@ namespace course_work.Handlers
                 // заказов нету
                 if (ShowAvailableOrders())
                 {
-                    int selectedOrder = HelperUI.GetSelectedOrderWithMessage("Введите номер заказа, который вы хотите приготовить: ");
+                    int selectedOrder = HelperUI.GetSelectedNumberWithMessage("Введите номер заказа, который вы хотите приготовить: ");
                     try
                     {
                         _cookService.TakeAnOrder(selectedOrder, worker); // Передаем заказ в сервис
@@ -83,7 +83,7 @@ namespace course_work.Handlers
                     catch (Exception ex)
                     {
                         Console.WriteLine("\nОшибка совершения заказа. " + ex.Message);
-                        retryInput = _cookView.GetYesOrNoAnswer();
+                        retryInput = HelperUI.GetYesOrNoAnswer();
                     }
                 }
                 else
@@ -116,7 +116,7 @@ namespace course_work.Handlers
                 // заказов нету
                 if (ShowCurrentOrders(worker))
                 {
-                    int selectedOrder = HelperUI.GetSelectedOrderWithMessage("Введите номер заказа, который вы приготовили: ");
+                    int selectedOrder = HelperUI.GetSelectedNumberWithMessage("Введите номер заказа, который вы приготовили: ");
                     try
                     {
                         _cookService.MarkOrderAsCooked(selectedOrder);
@@ -126,7 +126,7 @@ namespace course_work.Handlers
                     catch (Exception ex)
                     {
                         Console.WriteLine("\nОшибка совершения заказа. " + ex.Message);
-                        retryInput = _cookView.GetYesOrNoAnswer();
+                        retryInput = HelperUI.GetYesOrNoAnswer();
                     }
                 }
                 else
@@ -148,17 +148,17 @@ namespace course_work.Handlers
             do
             {
                 ShowAvailableDishes();
-                int selectedOrder = HelperUI.GetSelectedOrderWithMessage("Введите номер блюда для просмотра его рецепта: ");
+                int selectedDish = HelperUI.GetSelectedNumberWithMessage("Введите номер блюда для просмотра его рецепта: ");
                 try
                 {
-                    var recipes = _cookService.GetDishRecipe(selectedOrder);
-                    _cookView.PrintRecipes(recipes);
+                    var recipe = _cookService.GetDishRecipe(selectedDish);
+                    _cookView.PrintRecipes(recipe);
                     retryInput = "нет";
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("\nОшибка совершения заказа. " + ex.Message);
-                    retryInput = _cookView.GetYesOrNoAnswer();
+                    Console.WriteLine("\nОшибка просмотра рецепта. " + ex.Message);
+                    retryInput = HelperUI.GetYesOrNoAnswer();
                 }
             } while (retryInput == "да");
         }

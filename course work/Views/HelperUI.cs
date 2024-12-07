@@ -39,10 +39,43 @@ namespace course_work.Views
             }
         }
 
-        public static int GetSelectedOrderWithMessage(string message)
+        public static string GetRoleName(string role)
+        {
+            switch (role.ToLower())
+            {
+                case "waiter":
+                    return "Официант";
+                case "cook":
+                    return "Повар";
+                default:
+                    throw new ArgumentException($"Роль '{role}' не существует.");
+            }
+        }
+
+        public static int GetSelectedNumberWithMessage(string message)
         {
             Console.WriteLine(message);
             return Validator.GetValidInteger("Введите числовое значение: ");
+        }
+
+        internal static string GetYesOrNoAnswer()
+        {
+            string retryInput = "";
+            while (true)
+            {
+                Console.WriteLine("Хотите попробовать выбрать снова? (да/нет):");
+                retryInput = Console.ReadLine()?.Trim().ToLower();
+
+                if (retryInput == "да" || retryInput == "нет")
+                {
+                    break;
+                }
+                else
+                {
+                    Console.WriteLine("\nВведите корректный ответ: \"да\" или \"нет\".");
+                }
+            }
+            return retryInput;
         }
     }
 }

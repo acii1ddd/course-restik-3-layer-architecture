@@ -15,5 +15,7 @@ namespace BLL.DTO
         public DateTime HireDate { get; set; } = new DateTime();
 
         public string FullName { get; set; } = string.Empty;
+
+        public RoleDTO Role { get; set; }
     }
 }

@@ -49,25 +49,25 @@ namespace course_work.Views
             }
         }
 
-        internal string GetYesOrNoAnswer()
-        {
-            string retryInput = "";
-            while (true)
-            {
-                Console.WriteLine("Хотите попробовать выбрать снова? (да/нет):");
-                retryInput = Console.ReadLine()?.Trim().ToLower();
+        //internal string GetYesOrNoAnswer()
+        //{
+        //    string retryInput = "";
+        //    while (true)
+        //    {
+        //        Console.WriteLine("Хотите попробовать выбрать снова? (да/нет):");
+        //        retryInput = Console.ReadLine()?.Trim().ToLower();
 
-                if (retryInput == "да" || retryInput == "нет")
-                {
-                    break;
-                }
-                else
-                {
-                    Console.WriteLine("\nВведите корректный ответ: \"да\" или \"нет\".");
-                }
-            }
-            return retryInput;
-        }
+        //        if (retryInput == "да" || retryInput == "нет")
+        //        {
+        //            break;
+        //        }
+        //        else
+        //        {
+        //            Console.WriteLine("\nВведите корректный ответ: \"да\" или \"нет\".");
+        //        }
+        //    }
+        //    return retryInput;
+        //}
 
         internal PaymentMethod GetPaymentMethod()
         {

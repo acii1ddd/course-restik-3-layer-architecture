@@ -10,7 +10,7 @@ namespace course_work.Views
         {
             Console.WriteLine("\n1. Просмотр меню блюд");
             Console.WriteLine("2. Совершение заказа");
-            Console.WriteLine("3. Просмотр совершенных заказов");
+            Console.WriteLine("3. Просмотр ");
             Console.WriteLine("0. Выход");
             Console.WriteLine("Сделайте выбор:");
         }

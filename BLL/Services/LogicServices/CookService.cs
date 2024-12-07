@@ -106,7 +106,7 @@ namespace BLL.Services.LogicServices
                 var recipeDto = _mapper.Map<RecipeDTO>(recipe);
 
                 // Получаем ингредиент, который связан с нашим рецептом
-                var ingredientToRecipe = ingredients.FirstOrDefault(item => item.Id == recipeDto.Id);
+                var ingredientToRecipe = ingredients.FirstOrDefault(item => item.Id == recipeDto.IngredientId);
 
                 // добавляем ингредиент блюда
                 recipeDto.Ingredient = _mapper.Map<IngredientDTO>(ingredientToRecipe);

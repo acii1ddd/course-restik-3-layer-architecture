@@ -1,6 +1,7 @@
 ﻿using BLL.DTO;
 using BLL.ServiceInterfaces.LogicInterfaces;
 using course_work.Views;
+using DAL.Entities;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace course_work.Handlers
@@ -30,19 +31,13 @@ namespace course_work.Handlers
                 switch (choice)
                 {
                     case 1:
-                        ShowAllWorkers();
+                        ManageWorkers();
                         break;
                     case 2:
-                        //TakeAnOrder(worker);
+                        ManageDishes();
                         break;
                     case 3:
-                        //ShowCurrentOrders(worker);
-                        break;
-                    case 4:
                         //MarkOrderAsCooked(worker);
-                        break;
-                    case 5:
-                        //ViewDishRecipe();
                         break;
                     case 0:
                         isLeave = true;
@@ -59,9 +54,130 @@ namespace course_work.Handlers
             }
         }
 
-        private void ShowAllWorkers()
+        private bool ShowAllWorkers()
         {
-            Console.WriteLine("Все работники!!");
+            var workers = _adminService.GetAllWorkers();
+            try
+            {
+                _adminView.PrintWorkers(workers, "Работники ресторана: ");
+                return workers.Count() == 0 ? false : true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw;
+            }
+        }
+
+        private void ManageWorkers()
+        {
+            while (true)
+            {
+                _adminView.ManageWorkersMenu();
+                int choice = Validator.GetValidInteger("Сделайте выбор:");
+                switch (choice)
+                {
+                    case 1:
+                        ShowAllWorkers();
+                        break;
+                    case 2:
+                        AddWorker();
+                        break;
+                    case 3:
+                        RemoveWorker();
+                        break;
+                    case 0:
+                        return;
+                    default:
+                        Console.WriteLine("Выберите корректный номер.");
+                        break;
+                }
+            }
+        }
+
+        private void AddWorker()
+        {
+            Console.WriteLine("\nДобавление нового сотрудника.\n");
+            
+            // проверка на пустоту строк 
+            string roleName = Validator.GetNonEmptyInput("Введите должность сотрудника: ");
+            string login = Validator.GetNonEmptyInput("Введите логин сотрудника: ");
+            string password = Validator.GetNonEmptyInput("Введите пароль сотрудника: ");
+            string phoneNumber = Validator.GetNonEmptyInput("Введите номер телефона: ");
+
+            // Получение даты найма
+            DateTime hireDate = _adminView.GetValidHireDate();
+
+            string fullName = Validator.GetNonEmptyInput("Введите имя сотрудника: ");
+
+            try
+            {
+                _adminService.AddWorker(roleName, login, password, phoneNumber, hireDate, fullName);
+                Console.WriteLine("Сотрудник успешно добавлен.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Ошибка добавления работника " + ex.Message);
+            }
+        }
+
+        private void RemoveWorker()
+        {
+            string retryInput = "да";
+            do
+            {
+                // заказов нету
+                if (ShowAllWorkers())
+                {
+                    int selectedWorker = HelperUI.GetSelectedNumberWithMessage("Введите номер работника для удаления: ");
+                    try
+                    {
+                        _adminService.DeleteWorker(selectedWorker);
+                        Console.WriteLine($"\nРаботник под номером {selectedWorker} успешно удален.");
+                        retryInput = "нет";
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("\nОшибка удаления работника. " + ex.Message);
+                        retryInput = HelperUI.GetYesOrNoAnswer();
+                    }
+                }
+                else
+                {
+                    break;
+                }
+            } while (retryInput == "да");
+        }
+
+        private void ManageDishes()
+        {
+            while (true)
+            {
+                _adminView.ManageDishesMenu();
+                int choice = Validator.GetValidInteger("Сделайте выбор:");
+                switch (choice)
+                {
+                    case 1:
+                        ShowAllDishes();
+                        break;
+                    case 2:
+                        //AddWorker();
+                        break;
+                    case 3:
+                        //RemoveWorker();
+                        break;
+                    case 0:
+                        return;
+                    default:
+                        Console.WriteLine("Выберите корректный номер.");
+                        break;
+                }
+            }
+        }
+
+        private void ShowAllDishes()
+        {
+            Console.WriteLine("Вывод всех блюд");
         }
     }
 }

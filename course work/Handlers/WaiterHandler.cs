@@ -73,7 +73,7 @@ namespace course_work.Handlers
                 // заказов нету
                 if (ShowAvailableOrdersToDelivery())
                 {
-                    int selectedOrder = HelperUI.GetSelectedOrderWithMessage("Введите номер заказа, который вы берете: ");
+                    int selectedOrder = HelperUI.GetSelectedNumberWithMessage("Введите номер заказа, который вы берете: ");
                     try
                     {
                         _waiterService.TakeAnOrder(selectedOrder, worker); // Передаем заказ в сервис
@@ -83,7 +83,7 @@ namespace course_work.Handlers
                     catch (Exception ex)
                     {
                         Console.WriteLine("\nОшибка совершения заказа. " + ex.Message);
-                        retryInput = _waiterView.GetYesOrNoAnswer();
+                        retryInput = HelperUI.GetYesOrNoAnswer();
                     }
                 }
                 else
@@ -133,7 +133,7 @@ namespace course_work.Handlers
                 // если нет заказов
                 if (ShowUndeliveredOrders(worker))
                 {
-                    int selectedOrder = HelperUI.GetSelectedOrderWithMessage("Введите номер заказа, который вы доставили: ");
+                    int selectedOrder = HelperUI.GetSelectedNumberWithMessage("Введите номер заказа, который вы доставили: ");
                     try
                     {
                         _waiterService.MarkOrderAsDelivered(selectedOrder);
@@ -143,7 +143,7 @@ namespace course_work.Handlers
                     catch (Exception ex)
                     {
                         Console.WriteLine("\nОшибка при отметке заказа. " + ex.Message);
-                        retryInput = _waiterView.GetYesOrNoAnswer();
+                        retryInput = HelperUI.GetYesOrNoAnswer();
                     }
                 }
                 else
@@ -176,7 +176,7 @@ namespace course_work.Handlers
                 // если нет заказов
                 if (ShowCurrentUnpaidOrders(worker))
                 {
-                    int selectedOrder = HelperUI.GetSelectedOrderWithMessage("Введите номер заказа, чтобы принять оплату: ");
+                    int selectedOrder = HelperUI.GetSelectedNumberWithMessage("Введите номер заказа, чтобы принять оплату: ");
                     PaymentMethod paymentMethod = _waiterView.GetPaymentMethod();
                     
                     try
@@ -188,7 +188,7 @@ namespace course_work.Handlers
                     catch (Exception ex)
                     {
                         Console.WriteLine("\nОшибка при оплате заказа. " + ex.Message);
-                        retryInput = _waiterView.GetYesOrNoAnswer();
+                        retryInput = HelperUI.GetYesOrNoAnswer();
                     }
                 }
                 else

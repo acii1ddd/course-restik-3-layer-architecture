@@ -6,4 +6,11 @@
 
         public string Name { get; set; } = string.Empty;
     }
+
+    public enum WorkerRole
+    {
+        waiter,
+        cook,
+        admin,
+    }
 }
