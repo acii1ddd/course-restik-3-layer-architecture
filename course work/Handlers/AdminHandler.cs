@@ -176,7 +176,7 @@ namespace course_work.Handlers
             try
             {
                 var ordersForPeriod = _adminService.GetOrdersForPeriod(startDate, endDate);
-                HelperUI.PrintOrders(ordersForPeriod, $"Все заказы с {startDate.Date} до {endDate.Date}", "Нет заказов по заданным параметрам.");
+                _adminView.PrintOrders(ordersForPeriod, $"Все заказы с {startDate.Date.ToString("dd.M.yyyy")} до {endDate.Date.ToString("dd.M.yyyy")}", "Нет заказов по заданным параметрам.");
             }
             catch (Exception ex)
             {
@@ -189,7 +189,7 @@ namespace course_work.Handlers
             try
             {
                 var mostPopularDishes = _adminService.GetTheMostPopularDishes();
-                HelperUI.PrintDishes(mostPopularDishes, "2 самых популырных блюда", "Нет самых популярных блюд");
+                _adminView.PrintDishes(mostPopularDishes, "\nТоп 3 самых популырных блюда: ", "Нет самых популярных блюд.");
             }
             catch (Exception ex)
             {

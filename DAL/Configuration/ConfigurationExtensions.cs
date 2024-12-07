@@ -45,6 +45,9 @@ namespace DAL.Configuration
             services.AddScoped<IIngredientRepository>(provider => new IngredientRepository(connection));
             services.AddScoped<IRecipeRepository>(provider => new RecipeRepository(connection));
             services.AddScoped<IPaymentRepository>(provider => new PaymentRepository(connection));
+
+            services.AddScoped<IOrderArchiveRepository>(provider => new OrderArchiveRepository(connection));
+            services.AddScoped<IOrderItemArchiveRepository>(provider => new OrderItemArchiveRepository(connection));
         }
     }
 }

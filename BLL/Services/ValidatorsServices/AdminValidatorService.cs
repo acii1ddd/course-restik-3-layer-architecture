@@ -80,7 +80,7 @@ namespace BLL.Services.ValidatorsServices
 
             if (startDate > DateTime.Now || endDate > DateTime.Now)
             {
-                throw new ArgumentException("Извините, мы не видим будущее.");
+                throw new ArgumentException("Дата не может быть в будущем.");
             }
         }
     }

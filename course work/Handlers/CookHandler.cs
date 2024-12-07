@@ -62,8 +62,8 @@ namespace course_work.Handlers
         private bool ShowAvailableOrders()
         {
             var orders = _cookService.GetAlailableOrders();
-            //_cookView.PrintOrders(orders);
-            HelperUI.PrintOrders(orders, "\nВсе заказы: ", "Заказов пока еще нету.");
+            _cookView.PrintOrders(orders);
+            //HelperUI.PrintOrders(orders, "\nВсе заказы: ", "Заказов пока еще нету.");
             return orders.Count() == 0 ? false : true;
         }
 
@@ -100,8 +100,8 @@ namespace course_work.Handlers
             try
             {
                 var currentOrders = _cookService.GetCurrentOrders(worker);
-                //_cookView.PrintOrders(currentOrders);
-                HelperUI.PrintOrders(currentOrders, "\nВсе заказы: ", "Заказов пока еще нету.");
+                _cookView.PrintOrders(currentOrders);
+                //HelperUI.PrintOrders(currentOrders, "\nВсе заказы: ", "Заказов пока еще нету.");
                 return currentOrders.Count() == 0 ? false : true;
             }
             catch (Exception ex)

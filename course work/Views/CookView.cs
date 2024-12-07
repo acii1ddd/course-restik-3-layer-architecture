@@ -16,34 +16,34 @@ namespace course_work.Views
             Console.WriteLine("Сделайте выбор:");
         }
 
-        //internal void PrintOrders(List<OrderDTO> orders)
-        //{
-        //    if (orders == null || orders.Count() == 0)
-        //    {
-        //        Console.WriteLine("Заказов пока еще нету.");
-        //        return;
-        //    }
+        internal void PrintOrders(List<OrderDTO> orders)
+        {
+            if (orders == null || orders.Count() == 0)
+            {
+                Console.WriteLine("Заказов пока еще нету.");
+                return;
+            }
 
-        //    Console.WriteLine("\nВсе заказы:");
-        //    for (int i = 0; i < orders.Count; i++)
-        //    {
-        //        Console.WriteLine($"\nЗаказ {i + 1}. (Дата заказа: {orders[i].Date})");
+            Console.WriteLine("\nВсе заказы:");
+            for (int i = 0; i < orders.Count; i++)
+            {
+                Console.WriteLine($"\nЗаказ {i + 1}. (Дата заказа: {orders[i].Date})");
 
-        //        var dishesTable = new ConsoleTable("№", "Имя блюда", "Количество");
+                var dishesTable = new ConsoleTable("№", "Имя блюда", "Количество");
 
-        //        // по блюдам текущего заказа (по orderItem'ам)
-        //        for (int j = 0; j < orders[i].Items.Count; j++)
-        //        {
-        //            dishesTable.AddRow(
-        //                j + 1,
-        //                orders[i].Items[j].Dish.Name, // получ блюдо для вывода имени
-        //                orders[i].Items[j].Quantity // у самого ordersItem'а
-        //            );
-        //        }
+                // по блюдам текущего заказа (по orderItem'ам)
+                for (int j = 0; j < orders[i].Items.Count; j++)
+                {
+                    dishesTable.AddRow(
+                        j + 1,
+                        orders[i].Items[j].Dish.Name, // получ блюдо для вывода имени
+                        orders[i].Items[j].Quantity // у самого ordersItem'а
+                    );
+                }
 
-        //        dishesTable.Write(Format.Alternative);
-        //    }
-        //}
+                dishesTable.Write(Format.Alternative);
+            }
+        }
 
         //internal string GetYesOrNoAnswer()
         //{

@@ -61,8 +61,7 @@ namespace course_work.Handlers
         private bool ShowAvailableOrdersToDelivery()
         {
             var orders = _waiterService.GetAlailableOrdersToDelivery();
-            //_waiterView.PrintOrders(orders, "Заказы, доступные для доставки:");
-            HelperUI.PrintOrders(orders, "Заказы, доступные для доставки:", "Заказов пока еще нету.");
+            _waiterView.PrintOrders(orders, "Заказы, доступные для доставки:");
             return orders.Count() == 0 ? false : true;
         }
 
@@ -100,8 +99,7 @@ namespace course_work.Handlers
             try
             {
                 var currentOrders = _waiterService.GetCurrentOrders(worker);
-                //_waiterView.PrintOrders(currentOrders, "Ваши текущие заказы:");
-                HelperUI.PrintOrders(currentOrders, "Ваши текущие заказы:", "Заказов пока еще нету.");
+                _waiterView.PrintOrders(currentOrders, "Ваши текущие заказы:");
 
                 return currentOrders.Count() == 0 ? false : true;
             }
@@ -118,8 +116,7 @@ namespace course_work.Handlers
             try
             {
                 var currentOrders = _waiterService.GetCurrentUndeliveredOrders(worker);
-                //_waiterView.PrintOrders(currentOrders, "Заказы для доставки:");
-                HelperUI.PrintOrders(currentOrders, "Заказы для доставки:", "Заказов пока еще нету.");
+                _waiterView.PrintOrders(currentOrders, "Заказы для доставки:");
 
                 return currentOrders.Count() == 0 ? false : true;
             }
@@ -163,8 +160,7 @@ namespace course_work.Handlers
             try
             {
                 var unpaidOrders = _waiterService.GetCurrentUnpaidOrders(worker);
-                //_waiterView.PrintOrders(unpaidOrders, "Не оплаченные заказы:");
-                HelperUI.PrintOrders(unpaidOrders, "Не оплаченные заказы:", "Заказов пока еще нету.");
+                _waiterView.PrintOrders(unpaidOrders, "Не оплаченные заказы:");
 
                 return unpaidOrders.Count() == 0 ? false : true;
             }

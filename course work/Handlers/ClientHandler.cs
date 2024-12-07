@@ -95,8 +95,8 @@ namespace course_work.Handlers
             try
             {
                 var currOrders = _clientInteractionService.GetOrdersForClient(client);
-                //HelperUI.PrintOrders(currOrders);
-                HelperUI.PrintOrders(currOrders, $"\nВаши активные заказы: ", "У вас нет активных заказов.");
+                _clientView.PrintOrders(currOrders);
+                //HelperUI.PrintOrders(currOrders, $"\nВаши активные заказы: ", "У вас нет активных заказов.");
             }
             catch (Exception ex)
             {

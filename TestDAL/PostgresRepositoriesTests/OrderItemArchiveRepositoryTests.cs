@@ -5,23 +5,23 @@ using Npgsql;
 
 namespace TestDAL.PostgresRepositoriesTests
 {
-    public class OrderItemsRepositoryTests
+    public class OrderItemArchiveRepositoryTests
     {
-        private readonly IOrderItemRepository _orderItemRepository;
+        private readonly IOrderItemArchiveRepository _orderItemArchiveRepository;
         private readonly IDishRepository _dishRepository;
         private readonly IClientRepository _clientRepository;
-        private readonly IOrderRepository _orderRepository;
+        private readonly IOrderArchiveRepository _orderArchiveRepository;
 
         private readonly string _testPostgresConnectionString;
 
-        public OrderItemsRepositoryTests()
+        public OrderItemArchiveRepositoryTests()
         {
             // инициализация _testPostgresConnectionString внутри метода
             var serviceProvider = Configuration.ConfigureTest(out _testPostgresConnectionString);
-            _orderItemRepository = serviceProvider.GetService<IOrderItemRepository>() ?? throw new InvalidOperationException("Строка подключения для TestPostgres не найдена в конфигурации.");
+            _orderItemArchiveRepository = serviceProvider.GetService<IOrderItemArchiveRepository>() ?? throw new InvalidOperationException("Строка подключения для TestPostgres не найдена в конфигурации.");
             _dishRepository = serviceProvider.GetService<IDishRepository>() ?? throw new InvalidOperationException("Строка подключения для TestPostgres не найдена в конфигурации.");
             _clientRepository = serviceProvider.GetService<IClientRepository>() ?? throw new InvalidOperationException("Строка подключения для TestPostgres не найдена в конфигурации.");
-            _orderRepository = serviceProvider.GetService<IOrderRepository>() ?? throw new InvalidOperationException("Строка подключения для TestPostgres не найдена в конфигурации.");
+            _orderArchiveRepository = serviceProvider.GetService<IOrderArchiveRepository>() ?? throw new InvalidOperationException("Строка подключения для TestPostgres не найдена в конфигурации.");
         }
 
         private void ClearTable(string tableName)
@@ -72,7 +72,7 @@ namespace TestDAL.PostgresRepositoriesTests
                 ClientId = client.Id,
                 TableNumber = 4
             };
-            _orderRepository.Add(order);
+            _orderArchiveRepository.Add(order);
 
             var orderItem = new OrderItem
             {
@@ -85,14 +85,15 @@ namespace TestDAL.PostgresRepositoriesTests
         }
 
         [Fact]
-        public void AddOrderItem()
+        public void AddOrderItemArchive()
         {
             ClearAllTables();
+            // триггера на расчет total_dish_price в этой таблице нет, поэтому поставили его сами
             OrderItem orderItem = CreateTestOrderItemWithOrderIdAndDishId(1, 1);
 
             try
             {
-                _orderItemRepository.Add(orderItem);
+                _orderItemArchiveRepository.Add(orderItem);
             }
             catch (Exception ex)
             {
@@ -105,7 +106,7 @@ namespace TestDAL.PostgresRepositoriesTests
             using (var connection = new NpgsqlConnection(_testPostgresConnectionString))
             {
                 connection.Open();
-                var query = "SELECT * FROM orders_items WHERE id = @id";
+                var query = "SELECT * FROM orders_items_archive WHERE id = @id";
 
                 using (var command = new NpgsqlCommand(query, connection))
                 {
@@ -126,8 +127,9 @@ namespace TestDAL.PostgresRepositoriesTests
             ClearAllTables();
         }
 
+
         [Fact]
-        public void GetOrderItem()
+        public void GetOrderItemArchive()
         {
             ClearAllTables();
 
@@ -136,13 +138,13 @@ namespace TestDAL.PostgresRepositoriesTests
             var receivedOrderItem = new OrderItem();
 
             // Act
-            receivedOrderItem = _orderItemRepository.Get(orderItem.Id);
+            receivedOrderItem = _orderItemArchiveRepository.Get(orderItem.Id);
             // Assert
             Assert.Null(receivedOrderItem); // нет клиента с таким Id - получаем null
 
-            _orderItemRepository.Add(orderItem);
+            _orderItemArchiveRepository.Add(orderItem);
             // Act
-            receivedOrderItem = _orderItemRepository.Get(orderItem.Id);
+            receivedOrderItem = _orderItemArchiveRepository.Get(orderItem.Id);
             // Assert
             Assert.NotNull(receivedOrderItem);
             Assert.Equal(orderItem.OrderId, receivedOrderItem.OrderId);
@@ -154,25 +156,25 @@ namespace TestDAL.PostgresRepositoriesTests
         }
 
         [Fact]
-        public void DeleteOrderItem()
+        public void DeleteOrderItemArchive()
         {
             ClearAllTables();
 
             OrderItem orderItem = CreateTestOrderItemWithOrderIdAndDishId(1, 1);
 
-            _orderItemRepository.Add(orderItem);
+            _orderItemArchiveRepository.Add(orderItem);
 
             // Act
-            _orderItemRepository.Delete(orderItem);
+            _orderItemArchiveRepository.Delete(orderItem);
 
-            // Assert
-            var deletedClient = _orderItemRepository.Get(orderItem.Id);
+            // Assert   
+            var deletedClient = _orderItemArchiveRepository.Get(orderItem.Id);
             Assert.Null(deletedClient);
             ClearAllTables();
         }
 
         [Fact]
-        public void GetAllOrderItems()
+        public void GetAllOrderItemsArchive()
         {
             ClearAllTables();
             OrderItem orderItem = CreateTestOrderItemWithOrderIdAndDishId(1, 1);
@@ -181,19 +183,19 @@ namespace TestDAL.PostgresRepositoriesTests
             var orderItems = new List<OrderItem>();
 
             // Act
-            orderItems = _orderItemRepository.GetAll().ToList();
+            orderItems = _orderItemArchiveRepository.GetAll().ToList();
 
             // Assert
             Assert.Empty(orderItems);
 
             // сохраним общую сумму до изменения ее в Add
-            var totalPrice = orderItem.Quantity * orderItem.CurrDishPrice;
+            var totalPrice = orderItem.Quantity * orderItem.CurrDishPrice; // так как триггера на расчет total_dish_price для orders_items_archive нету
 
             // не пустой лист
-            _orderItemRepository.Add(orderItem);
+            _orderItemArchiveRepository.Add(orderItem);
 
             // Act
-            orderItems = _orderItemRepository.GetAll().ToList();
+            orderItems = _orderItemArchiveRepository.GetAll().ToList();
 
             // Assert
             Assert.Single(orderItems); // одна штука
@@ -206,30 +208,28 @@ namespace TestDAL.PostgresRepositoriesTests
         }
 
         [Fact]
-        public void UpdateOrderItem()
+        public void UpdateOrderItemArchive()
         {
             ClearAllTables();
             OrderItem orderItem1 = CreateTestOrderItemWithOrderIdAndDishId(1, 1);
-            _orderItemRepository.Add(orderItem1);
+            _orderItemArchiveRepository.Add(orderItem1);
 
             // поменяли поля для обновления старого сотрудника
-            OrderItem updated = CreateTestOrderItemWithOrderIdAndDishId(2, 2);
-            updated.Id = orderItem1.Id;
-            updated.Quantity = 5;
-            updated.CurrDishPrice = 5;
-
-            var updatedTotalPrice = updated.Quantity * updated.CurrDishPrice;
+            orderItem1.Quantity = 5;
+            orderItem1.CurrDishPrice = 5;
+            var updatedTotalPrice = orderItem1.Quantity * orderItem1.CurrDishPrice;
+            orderItem1.TotalDishPrice = updatedTotalPrice;
 
             // Act
-            _orderItemRepository.Update(updated);
+            _orderItemArchiveRepository.Update(orderItem1);
 
             // Assert
-            var updatedOrderItem = _orderItemRepository.Get(updated.Id);
+            var updatedOrderItem = _orderItemArchiveRepository.Get(orderItem1.Id);
             Assert.NotNull(updatedOrderItem);
-            Assert.Equal(updatedOrderItem.OrderId, updated.OrderId);
-            Assert.Equal(updatedOrderItem.DishId, updated.DishId);
-            Assert.Equal(updatedOrderItem.Quantity, updated.Quantity);
-            Assert.Equal(updatedOrderItem.CurrDishPrice, updated.CurrDishPrice);
+            Assert.Equal(updatedOrderItem.OrderId, orderItem1.OrderId);
+            Assert.Equal(updatedOrderItem.DishId, orderItem1.DishId);
+            Assert.Equal(updatedOrderItem.Quantity, orderItem1.Quantity);
+            Assert.Equal(updatedOrderItem.CurrDishPrice, orderItem1.CurrDishPrice);
             Assert.Equal(updatedOrderItem.TotalDishPrice, updatedTotalPrice);
             ClearAllTables();
         }

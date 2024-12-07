@@ -11,21 +11,21 @@ namespace BLL.Services.LogicServices
     {
         private readonly IWorkerRepository _workerRepository;
         private readonly IDishRepository _dishRepository;
-        private readonly IOrderRepository _orderRepository;
+        private readonly IOrderArchiveRepository _orderArchiveRepository;
         private readonly IRoleRepository _roleRepository;
         private readonly IAdminValidatorService _adminValidatorService;
-        private readonly IOrderItemRepository _orderItemRepository;
+        private readonly IOrderItemArchiveRepository _orderItemArchiveRepository;
         private readonly IClientRepository _clientRepository;
         private IMapper _mapper;
 
-        public AdminService(IWorkerRepository workerRepository, IDishRepository dishRepository, IOrderRepository orderRepository, IRoleRepository roleRepository, IAdminValidatorService adminValidatorService, IOrderItemRepository orderItemRepository, IClientRepository clientRepository, IMapper mapper)
+        public AdminService(IWorkerRepository workerRepository, IDishRepository dishRepository, IOrderArchiveRepository orderArchiveRepository, IRoleRepository roleRepository, IAdminValidatorService adminValidatorService, IOrderItemArchiveRepository orderItemArchiveRepository, IClientRepository clientRepository, IMapper mapper)
         {
             _workerRepository = workerRepository;
             _dishRepository = dishRepository;
-            _orderRepository = orderRepository;
+            _orderArchiveRepository = orderArchiveRepository;
             _roleRepository = roleRepository;
             _adminValidatorService = adminValidatorService;
-            _orderItemRepository = orderItemRepository;
+            _orderItemArchiveRepository = orderItemArchiveRepository;
             _clientRepository = clientRepository;
             _mapper = mapper;
         }
@@ -78,7 +78,7 @@ namespace BLL.Services.LogicServices
             if (startDate == endDate)
             {
                 return GetOrdersWithItems(
-                    _orderRepository
+                    _orderArchiveRepository
                         .GetAll()
                         .Where(or => or.Date.Date == startDate.Date)
                         .ToList()
@@ -88,7 +88,7 @@ namespace BLL.Services.LogicServices
             else
             {
                 return GetOrdersWithItems(
-                    _orderRepository
+                    _orderArchiveRepository
                         .GetAll()
                         .Where(or => or.Date.Date >= startDate.Date && or.Date.Date <= endDate)
                         .ToList()
@@ -104,7 +104,7 @@ namespace BLL.Services.LogicServices
                 return new List<OrderDTO>(); // Если заказов нет, возвращаем пустой список
             }
 
-            var orderItems = _orderItemRepository.GetAll().ToList(); // total_cost обновиться триггером из базы данных
+            var orderItems = _orderItemArchiveRepository.GetAll().ToList(); // total_cost обновиться триггером из базы данных
             var dishes = _dishRepository.GetAll().ToList();
             var clients = _clientRepository.GetAll().ToList();
 
@@ -140,22 +140,23 @@ namespace BLL.Services.LogicServices
             return availableOrdersWithItems;
         }
 
+        // топ 3 самых популярных блюд по общему количеству во всех заказах
         public List<DishDTO> GetTheMostPopularDishes()
         {
             // позиции блюд всех вообще заказов
-            var orderItems = _orderItemRepository.GetAll().ToList();
+            var orderItemsArchive = _orderItemArchiveRepository.GetAll().ToList();
             var dishes = _dishRepository.GetAll().ToList();
 
-            // Группируем позиции заказа по блюду и подсчитываем их количество
-            var popularDishes = orderItems
+            // группируем позиции заказа по блюду и подсчитываем их количество
+            var popularDishes = orderItemsArchive
                 .GroupBy(item => item.DishId) // группируем по dish_id
                 .Select(group => new // для каждой группы берем dish_id и кол-во в этой группе
                 {
                     DishId = group.Key,
-                    Count = group.Count()
+                    TotalQuantity = group.Sum(item => item.Quantity) // общее количество блюда DishId во всех заказах
                 })
-                .OrderByDescending(d => d.Count) // сортируем по убываию количеств в группе
-                .Take(2) // самые популярные блюда
+                .OrderByDescending(d => d.TotalQuantity) // сортируем по убываию количеств в группе
+                .Take(3) // самые популярные блюда
                 .ToList();
 
             // маппинг популярных блюд в DTO
