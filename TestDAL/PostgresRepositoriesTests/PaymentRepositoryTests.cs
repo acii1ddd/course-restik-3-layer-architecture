@@ -14,7 +14,7 @@ namespace TestDAL.PostgresRepositoriesTests
 
         public PaymentRepositoryTests()
         {
-            var serviceProvider = Configuration.ConfigureTest(out _testPostgresConnectionString);
+            var serviceProvider = Configuration.ConfigureTestPostgres(out _testPostgresConnectionString);
             _paymentRepository = serviceProvider.GetService<IPaymentRepository>() ?? throw new InvalidOperationException("Строка подключения для TestPostgres не найдена в конфигурации.");
             _orderRepository = serviceProvider.GetService<IOrderRepository>() ?? throw new InvalidOperationException("Строка подключения для TestPostgres не найдена в конфигурации.");
             _clientRepository = serviceProvider.GetService<IClientRepository>() ?? throw new InvalidOperationException("Строка подключения для TestPostgres не найдена в конфигурации.");

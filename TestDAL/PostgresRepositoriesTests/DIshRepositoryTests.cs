@@ -13,7 +13,7 @@ namespace TestDAL.PostgresRepositoriesTests
         public DIshRepositoryTests()
         {
             // инициализация _testPostgresConnectionString внутри метода
-            var serviceProvider = Configuration.ConfigureTest(out _testPostgresConnectionString);
+            var serviceProvider = Configuration.ConfigureTestPostgres(out _testPostgresConnectionString);
             _dishRepository = serviceProvider.GetService<IDishRepository>() ?? throw new InvalidOperationException("Строка подключения для TestPostgres не найдена в конфигурации.");
         }
 

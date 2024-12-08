@@ -6,7 +6,7 @@ namespace DAL.Configuration
 {
     public static class ConfigurationExtensions
     {
-        public static void ConfigureDAL(this IServiceCollection services, string connection, string type)
+        public static void ConfigureDAL(this IServiceCollection services, string connection, string type, string databaseName)
         {
             switch (type)
             {
@@ -14,16 +14,17 @@ namespace DAL.Configuration
                     services.ConfigurePostgres(connection);
                     break;
                 case "mongo":
-                    services.ConfigureMongo(connection);
+                    services.ConfigureMongo(connection, databaseName);
                     break;
                 default:
                     throw new Exception("Неизвестный тип базы данных");
             }
         }
 
-        public static void ConfigureMongo(this IServiceCollection services, string connection)
+        public static void ConfigureMongo(this IServiceCollection services, string connection, string databaseName)
         {
-            //services.AddScoped<IClientRepository>(provider => new DAL.MongoRepositories.ClientRepository(connection));
+
+            services.AddScoped<IClientRepository>(provider => new DAL.MongoRepositories.ClientRepository(connection, databaseName, "clients"));
             //services.AddScoped<IWorkerRepository>(provider => new DAL.MongoRepositories.WorkerRepository(connection));
             //services.AddScoped<IRoleRepository>(provider => new DAL.MongoRepositories.RoleRepository(connection));
             //services.AddScoped<IDishRepository>(provider => new DAL.MongoRepositories.DAL.MongoRepositories.DishRepository(connection));

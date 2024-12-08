@@ -17,7 +17,7 @@ namespace TestDAL.PostgresRepositoriesTests
         public OrderItemArchiveRepositoryTests()
         {
             // инициализация _testPostgresConnectionString внутри метода
-            var serviceProvider = Configuration.ConfigureTest(out _testPostgresConnectionString);
+            var serviceProvider = Configuration.ConfigureTestPostgres(out _testPostgresConnectionString);
             _orderItemArchiveRepository = serviceProvider.GetService<IOrderItemArchiveRepository>() ?? throw new InvalidOperationException("Строка подключения для TestPostgres не найдена в конфигурации.");
             _dishRepository = serviceProvider.GetService<IDishRepository>() ?? throw new InvalidOperationException("Строка подключения для TestPostgres не найдена в конфигурации.");
             _clientRepository = serviceProvider.GetService<IClientRepository>() ?? throw new InvalidOperationException("Строка подключения для TestPostgres не найдена в конфигурации.");

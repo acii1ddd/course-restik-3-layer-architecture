@@ -15,9 +15,9 @@ namespace BLL.Configuration
 {
     public static class ConfigurationExtensions
     {
-        public static void ConfigureBLL(this IServiceCollection services, string connection, string type)
+        public static void ConfigureBLL(this IServiceCollection services, string connection, string type, string databaseName)
         {
-            services.ConfigureDAL(connection, type);
+            services.ConfigureDAL(connection, type, databaseName);
 
             //профили
             services.AddAutoMapper(

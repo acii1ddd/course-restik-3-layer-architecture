@@ -1,6 +1,8 @@
 ﻿using BLL.Configuration;
+using BLL.ServiceInterfaces.DTOs;
 using BLL.ServiceInterfaces.LogicInterfaces;
 using course_work.Handlers;
+using DAL.Entities;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -17,22 +19,25 @@ namespace course_work
                 .Build();
             var services = new ServiceCollection();
 
-            var type = config["DbType:Type"]; // sql
+            var type = config["DbType:Type"]; // postgres / mongo
 
             if (type == "postgres")
             {
                 var postgresConnection = config.GetConnectionString("PostgresConnection") ?? throw new ArgumentNullException();
-                services.ConfigureBLL(postgresConnection, type);
+                services.ConfigureBLL(postgresConnection, type, "");
             }
             else if (type == "mongo")
             {
                 var mongoConnection = config.GetConnectionString("MongoConnection") ?? throw new ArgumentNullException();
-                services.ConfigureBLL(mongoConnection, type);
+
+                // restaurant запихнуть в appsettings.json
+                services.ConfigureBLL(mongoConnection, type, "restaurant");
             }
 
             // получаем сервис для работы с клиентами
             var provider = services.BuildServiceProvider();
 
+            // -----------------------
             bool isLogin = false;
             while (!isLogin)
             {

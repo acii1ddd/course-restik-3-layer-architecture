@@ -7,6 +7,7 @@ services:
     container_name: app
     depends_on: 
       - postgres
+      - mongodb
     networks:
       - app-network
   
@@ -31,24 +32,24 @@ services:
       - pg_main_postgres_backup:/backup # volume for save backups
     
   # test postgres
-  postgres_test:
-    image: postgres
-    restart: always
-    shm_size: 128mb
-    environment:
-      POSTGRES_USER: ${POSTGRES_TEST_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_TEST_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_TEST_DB}
-    container_name: postgres_test
-    networks:
-      - app-network
-    ports:
-      - "${POSTGRES_TEST_PORT}:5432" # another port for test db
-    volumes:
-      - pg_test_data:/var/lib/postgresql/data # another volume for test db
-      - pg_main_postgres_backup:/backup # same volume for save to restore backups
+  # postgres_test:
+  #   image: postgres
+  #   restart: always
+  #   shm_size: 128mb
+  #   environment:
+  #     POSTGRES_USER: ${POSTGRES_TEST_USER}
+  #     POSTGRES_PASSWORD: ${POSTGRES_TEST_PASSWORD}
+  #     POSTGRES_DB: ${POSTGRES_TEST_DB}
+  #   container_name: postgres_test
+  #   networks:
+  #     - app-network
+  #   ports:
+  #     - "${POSTGRES_TEST_PORT}:5432" # another port for test db
+  #   volumes:
+  #     - pg_test_data:/var/lib/postgresql/data # another volume for test db
+  #     - pg_main_postgres_backup:/backup # same volume for save to restore backups
     
-# mongodb
+# main mongodb
   mongodb:
     image: mongo
     restart: always
@@ -63,6 +64,21 @@ services:
     volumes:
       - mongo_data:/data/db
 
+# test mongodb
+  mongodb_test:
+    image: mongo
+    restart: always
+    container_name: monga_test
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME} # same user
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+    networks:
+      - app-network
+    ports:
+      - "${MONGO_TEST_PORT}:27017"  # another post 27018
+    volumes:
+      - mongo_test_data:/data/db  # volume for test mongodb
+
 networks:
   app-network:
 
@@ -71,3 +87,4 @@ volumes:
   pg_test_data: # volume for test postgres
   pg_main_postgres_backup: # the same volume for two postgres (test and main)
   mongo_data:
+  mongo_test_data: # volume for test mongodb

@@ -13,7 +13,7 @@ namespace TestDAL.PostgresRepositoriesTests
         public OrdersArchiveRepositoryTests()
         {
             // инициализация _testPostgresConnectionString внутри метода
-            var serviceProvider = Configuration.ConfigureTest(out _testPostgresConnectionString);
+            var serviceProvider = Configuration.ConfigureTestPostgres(out _testPostgresConnectionString);
             _orderArchiveRepository = serviceProvider.GetService<IOrderArchiveRepository>() ?? throw new InvalidOperationException("Строка подключения для TestPostgres не найдена в конфигурации.");
         }
 

@@ -1,5 +1,6 @@
 ﻿using BLL.DTO;
 using BLL.ServiceInterfaces;
+using BLL.ServiceInterfaces.DTOs;
 using BLL.ServiceInterfaces.ValidatorsInterfaces;
 using course_work.Views;
 using Microsoft.Extensions.DependencyInjection;

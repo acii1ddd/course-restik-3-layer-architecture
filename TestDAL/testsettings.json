@@ -1,5 +1,9 @@
 {
   "ConnectionStrings": {
-    "TestPostgres": "Host=localhost;Port=3333;Username=test;Password=test;Database=test_db;"
+    "TestPostgres": "Host=localhost;Port=3333;Username=test;Password=test;Database=test_db;",
+    "TestMongo": "mongodb://monga:123@localhost:27018/test_restaurant"
+  },
+  "MongoSettings": {
+    "DatabaseName": "test_restaurant"
   }
 }

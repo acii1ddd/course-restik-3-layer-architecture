@@ -40,10 +40,6 @@
     </None>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="MongoRepositoriesTests\" />
-  </ItemGroup>
-
   <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
 
 </Project>
