@@ -1,4 +1,5 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace DAL.Entities
 {
@@ -11,6 +12,7 @@ namespace DAL.Entities
         public string Name { get; set; } = string.Empty;
 
         [BsonElement("unit")]
+        [BsonRepresentation(BsonType.String)] // сериализация как строка
         public UnitsOfMeasurement Unit { get; set; }
 
         [BsonElement("stock_quantity")]

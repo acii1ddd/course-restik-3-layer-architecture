@@ -1,4 +1,5 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace DAL.Entities
 {
@@ -17,9 +18,11 @@ namespace DAL.Entities
         public decimal? TotalCost { get; set; } // триггер
 
         [BsonElement("status")]
+        [BsonRepresentation(BsonType.String)] // сериализация как строка
         public OrderStatus Status { get; set; } = OrderStatus.InProcessing;
 
         [BsonElement("payment_status")]
+        [BsonRepresentation(BsonType.String)] // сериализация как строка
         public PaymentStatus PaymentStatus { get; set; } = PaymentStatus.Unpaid;
 
         [BsonElement("waiter_id")]

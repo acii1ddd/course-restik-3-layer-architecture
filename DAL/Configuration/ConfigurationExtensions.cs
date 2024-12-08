@@ -27,12 +27,14 @@ namespace DAL.Configuration
             services.AddScoped<IClientRepository>(provider => new DAL.MongoRepositories.ClientRepository(connection, databaseName, "clients"));
             //services.AddScoped<IWorkerRepository>(provider => new DAL.MongoRepositories.WorkerRepository(connection));
             //services.AddScoped<IRoleRepository>(provider => new DAL.MongoRepositories.RoleRepository(connection));
-            //services.AddScoped<IDishRepository>(provider => new DAL.MongoRepositories.DAL.MongoRepositories.DishRepository(connection));
+            services.AddScoped<IDishRepository>(provider => new DAL.MongoRepositories.DishRepository(connection, databaseName, "dishes"));
             //services.AddScoped<IOrderRepository>(provider => new DAL.MongoRepositories.OrderRepository(connection));
             //services.AddScoped<IOrderItemRepository>(provider => new DAL.MongoRepositories.OrderItemRepository(connection));
-            //services.AddScoped<IIngredientRepository>(provider => new DAL.MongoRepositories.IngredientRepository(connection));
+            services.AddScoped<IIngredientRepository>(provider => new DAL.MongoRepositories.IngredientRepository(connection, databaseName, "ingredients"));
             //services.AddScoped<IRecipeRepository>(provider => new DAL.MongoRepositories.RecipeRepository(connection));
             //services.AddScoped<IPaymentRepository>(provider => new DAL.MongoRepositories.PaymentRepository(connection));
+
+            services.AddScoped<IOrderArchiveRepository>(provider => new DAL.MongoRepositories.OrderArchiveRepository(connection, databaseName, "orders_archive"));
         }
 
         public static void ConfigurePostgres(this IServiceCollection services, string connection)

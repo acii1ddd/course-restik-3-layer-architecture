@@ -63,163 +63,161 @@ namespace TestDAL.MongoRepositoriesTests
             ClearCollection();
         }
 
-        //[Fact]
-        //public void GetClient_ShouldReturnClientById()
-        //{
-        //    // очистка табллицы clients
-        //    ClearTable();
+        [Fact]
+        public void GetClient_ShouldReturnClientById()
+        {
+            ClearCollection();
 
-        //    var client = new Client()
-        //    {
-        //        Login = "test_get_login",
-        //        Password = "test_get_password",
-        //        Name = "test_get_name"
-        //    };
+            var client = new Client()
+            {
+                Login = "test_get_login",
+                Password = "test_get_password",
+                Name = "test_get_name"
+            };
 
-        //    var receivedClient = new Client();
+            var receivedClient = new Client();
 
-        //    // Act
-        //    receivedClient = _clientRepository.Get(client.Id);
-        //    // Assert
-        //    Assert.Null(receivedClient); // нет клиента с таким Id - получаем null
+            // Act
+            receivedClient = _clientRepository.Get(client.Id);
+            // Assert
+            Assert.Null(receivedClient); // нет клиента с таким Id - получаем null
 
-        //    _clientRepository.Add(client);
+            _clientRepository.Add(client);
 
-        //    // Act
-        //    receivedClient = _clientRepository.Get(client.Id);
-        //    // Assert
-        //    Assert.NotNull(receivedClient);
+            // Act
+            receivedClient = _clientRepository.Get(client.Id);
+            // Assert
+            Assert.NotNull(receivedClient);
+            Assert.Equal(client.Login, receivedClient.Login);
+            Assert.Equal(client.Password, receivedClient.Password);
+            Assert.Equal(client.Name, receivedClient.Name);
+            ClearCollection();
+        }
 
-        //    Assert.Equal(client.Login, receivedClient.Login);
-        //    Assert.Equal(client.Password, receivedClient.Password);
-        //    Assert.Equal(client.Name, receivedClient.Name);
-        //    ClearTable();
-        //}
+        [Fact]
+        public void DeleteClient_ShouldDeleteClient()
+        {
+            ClearCollection();
+            var client = new Client()
+            {
+                Login = "test_delete_login",
+                Password = "test_delete_password",
+                Name = "test_delete_name"
+            };
 
-        //[Fact]
-        //public void DeleteClient_ShouldDeleteClient()
-        //{
-        //    ClearTable();
-        //    var client = new Client()
-        //    {
-        //        Login = "test_delete_login",
-        //        Password = "test_delete_password",
-        //        Name = "test_delete_name"
-        //    };
+            _clientRepository.Add(client);
 
-        //    _clientRepository.Add(client);
+            // Act
+            _clientRepository.Delete(client);
 
-        //    // Act
-        //    _clientRepository.Delete(client);
+            // Assert
+            var deletedClient = _clientRepository.Get(client.Id);
+            Assert.Null(deletedClient);
+            ClearCollection();
+        }
 
-        //    // Assert
-        //    var deletedClient = _clientRepository.Get(client.Id);
-        //    Assert.Null(deletedClient);
-        //    ClearTable();
-        //}
+        [Fact]
+        public void GetAllClients_ShouldReturnAllClients()
+        {
+            ClearCollection();
+            var client1 = new Client()
+            {
+                Login = "test_getAll_login1",
+                Password = "test_getAll_password1",
+                Name = "test_getAll_name1"
+            };
 
-        //[Fact]
-        //public void GetAllClients_ShouldReturnAllClients()
-        //{
-        //    ClearTable();
-        //    var client1 = new Client()
-        //    {
-        //        Login = "test_getAll_login1",
-        //        Password = "test_getAll_password1",
-        //        Name = "test_getAll_name1"
-        //    };
+            var client2 = new Client()
+            {
+                Login = "test_getAll_login2",
+                Password = "test_getAll_password2",
+                Name = "test_getAll_name2"
+            };
 
-        //    var client2 = new Client()
-        //    {
-        //        Login = "test_getAll_login2",
-        //        Password = "test_getAll_password2",
-        //        Name = "test_getAll_name2"
-        //    };
+            // пустой лист, если ничего нету в таблице
+            var clients = new List<Client>();
 
-        //    // пустой лист, если ничего нету в таблице
-        //    var clients = new List<Client>();
+            // Act
+            clients = _clientRepository.GetAll().ToList();
 
-        //    // Act
-        //    clients = _clientRepository.GetAll().ToList();
+            // Assert
+            Assert.Empty(clients);
 
-        //    // Assert
-        //    Assert.Empty(clients);
+            // не пустой лист
+            _clientRepository.Add(client1);
+            _clientRepository.Add(client2);
 
-        //    // не пустой лист
-        //    _clientRepository.Add(client1);
-        //    _clientRepository.Add(client2);
+            // Act
+            clients = _clientRepository.GetAll().ToList();
 
-        //    // Act
-        //    clients = _clientRepository.GetAll().ToList();
+            // Assert
+            Assert.Equal(2, clients.Count);
 
-        //    // Assert
-        //    Assert.Equal(2, clients.Count);
+            Assert.Contains(clients, c => c.Login == client1.Login);
+            Assert.Contains(clients, c => c.Login == client2.Login);
+            ClearCollection();
+        }
 
-        //    Assert.Contains(clients, c => c.Login == client1.Login);
-        //    Assert.Contains(clients, c => c.Login == client2.Login);
-        //    ClearTable();
-        //}
+        [Fact]
+        public void UpdateClient_ShouldUpdateExistingClient()
+        {
+            ClearCollection();
+            var client = new Client()
+            {
+                Login = "test_update_login",
+                Password = "test_update_password",
+                Name = "test_update_name"
+            };
+            _clientRepository.Add(client);
 
-        //[Fact]
-        //public void UpdateClient_ShouldUpdateExistingClient()
-        //{
-        //    ClearTable();
-        //    var client = new Client()
-        //    {
-        //        Login = "test_update_login",
-        //        Password = "test_update_password",
-        //        Name = "test_update_name"
-        //    };
-        //    _clientRepository.Add(client);
+            // поменяли поля для обновления старого клиента
+            client.Login = "updated_login";
+            client.Password = "updated_password";
+            client.Name = "updated_name";
 
-        //    // поменяли поля для обновления старого клиента
-        //    client.Login = "updated_login";
-        //    client.Password = "updated_password";
-        //    client.Name = "updated_name";
+            // Act
+            _clientRepository.Update(client);
 
-        //    // Act
-        //    _clientRepository.Update(client);
+            // Assert
+            var updatedClient = _clientRepository.Get(client.Id);
+            Assert.NotNull(updatedClient);
 
-        //    // Assert
-        //    var updatedClient = _clientRepository.Get(client.Id);
-        //    Assert.NotNull(updatedClient);
+            Assert.Equal(updatedClient.Login, client.Login);
+            Assert.Equal(updatedClient.Password, client.Password);
+            Assert.Equal(updatedClient.Name, client.Name);
+            ClearCollection();
+        }
 
-        //    Assert.Equal(updatedClient.Login, client.Login);
-        //    Assert.Equal(updatedClient.Password, client.Password);
-        //    Assert.Equal(updatedClient.Name, client.Name);
-        //    ClearTable();
-        //}
+        [Fact]
+        public void GetClientByLogin_ReturnsClientOrNULL()
+        {
+            ClearCollection();
+            var client = new Client()
+            {
+                Login = "test_getBylogin_login",
+                Password = "test_getBylogin_pass",
+                Name = "test_getBylogin_name"
+            };
 
-        //[Fact]
-        //public void GetClientByLogin_ReturnsClientOrNULL()
-        //{
-        //    ClearTable();
-        //    var client = new Client()
-        //    {
-        //        Login = "test_getBylogin_login",
-        //        Password = "test_getBylogin_pass",
-        //        Name = "test_getBylogin_name"
-        //    };
+            // нет клиента с таким логином
+            // Act 1
+            var receivedClient = _clientRepository.GetByLogin(client.Login);
 
-        //    // нет клиента с таким логином
-        //    // Act 1
-        //    var receivedClient = _clientRepository.GetByLogin(client.Login);
+            // Assert
+            Assert.Null(receivedClient);
 
-        //    // Assert
-        //    Assert.Null(receivedClient);
+            // есть клиент с таким логином
+            _clientRepository.Add(client);
 
-        //    // есть клиент с таким логином
-        //    _clientRepository.Add(client);
+            // Act 2
+            receivedClient = _clientRepository.GetByLogin(client.Login);
 
-        //    // Act 2
-        //    receivedClient = _clientRepository.GetByLogin(client.Login);
-
-        //    // Assert
-        //    Assert.NotNull(receivedClient);
-        //    Assert.Equal(receivedClient.Login, client.Login);
-        //    Assert.Equal(receivedClient.Password, client.Password);
-        //    Assert.Equal(receivedClient.Name, client.Name);
-        //    ClearTable();
-        //}
+            // Assert
+            Assert.NotNull(receivedClient);
+            Assert.Equal(receivedClient.Login, client.Login);
+            Assert.Equal(receivedClient.Password, client.Password);
+            Assert.Equal(receivedClient.Name, client.Name);
+            ClearCollection();
+        }
     }
 }

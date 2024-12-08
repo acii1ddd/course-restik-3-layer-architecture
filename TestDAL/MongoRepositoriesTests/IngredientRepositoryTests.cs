@@ -1,40 +1,39 @@
 ﻿using DAL.Entities;
 using DAL.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
-using Npgsql;
+using MongoDB.Driver;
 
-namespace TestDAL.PostgresRepositoriesTests
+namespace TestDAL.MongoRepositoriesTests
 {
     public class IngredientRepositoryTests
     {
         private readonly IIngredientRepository _ingredientRepository;
-        private readonly string _testPostgresConnectionString;
+        private readonly IMongoCollection<Ingredient> _collection;
+        private readonly string _testMongoConnectionString;
+        private readonly string _testMongoDbName;
 
         public IngredientRepositoryTests()
         {
             // инициализация _testPostgresConnectionString внутри метода
-            var serviceProvider = Configuration.ConfigureTestPostgres(out _testPostgresConnectionString);
+            var serviceProvider = Configuration.ConfigureTestMongo(out _testMongoConnectionString, out _testMongoDbName);
+
+            var client = new MongoClient(_testMongoConnectionString);
+            var database = client.GetDatabase(_testMongoDbName);
+            _collection = database.GetCollection<Ingredient>("ingredients");
+
             _ingredientRepository = serviceProvider.GetService<IIngredientRepository>() ?? throw new InvalidOperationException("Строка подключения для TestPostgres не найдена в конфигурации.");
         }
 
-        private void ClearTable()
+        // очистка коллекции перед каждым тестом
+        private void ClearCollection()
         {
-            using (var connection = new NpgsqlConnection(_testPostgresConnectionString))
-            {
-                connection.Open();
-                var query = "TRUNCATE TABLE ingredients RESTART IDENTITY CASCADE";
-
-                using (var command = new NpgsqlCommand(query, connection))
-                {
-                    command.ExecuteNonQuery();
-                }
-            }
+            _collection.DeleteMany(Builders<Ingredient>.Filter.Empty);
         }
 
         [Fact]
-        public void AddIngredientToDb() // пока без async
+        public void AddDish()
         {
-            ClearTable();
+            ClearCollection();
             // Id = 0
             var ingredient = new Ingredient
             {
@@ -51,39 +50,27 @@ namespace TestDAL.PostgresRepositoriesTests
             }
             catch (Exception ex)
             {
-                Assert.Fail($"Ошибка при добавлении ингредиента: {ex.Message}");
+                Assert.Fail($"Ошибка при добавлении клиента: {ex.Message}");
             }
+
+            // получили добавленное блюдо
+            var retrievedClient = _collection.Find(c => c.Id == ingredient.Id).FirstOrDefault(); // Поиск клиента асинхронно
 
             // Assert
-            Assert.NotEqual(0, ingredient.Id);
+            Assert.Equal(1, ingredient.Id); // обновился Id
+            Assert.NotNull(retrievedClient);
+            Assert.Equal(ingredient.Name, retrievedClient.Name);
+            Assert.Equal(ingredient.Unit, retrievedClient.Unit);
+            Assert.Equal(ingredient.StockQuantity, retrievedClient.StockQuantity);
+            Assert.Equal(ingredient.ThresholdLevel, retrievedClient.ThresholdLevel);
 
-            using (var connection = new NpgsqlConnection(_testPostgresConnectionString))
-            {
-                connection.Open();
-                var query = "SELECT * FROM ingredients WHERE id = @id";
-
-                using (var command = new NpgsqlCommand(query, connection))
-                {
-                    command.Parameters.AddWithValue("id", ingredient.Id);
-
-                    using (var reader = command.ExecuteReader())
-                    {
-                        // true если reader вернет true, исключение с сообщением "Ingredient not found in database." - если false
-                        Assert.True(reader.Read(), "Ingredient not found in database."); // проверка reader на true/false
-                        Assert.Equal(ingredient.Name, reader["name"]);
-                        Assert.Equal(UnitsOfMeasurement.Kg, Enum.Parse<UnitsOfMeasurement>(reader["unit"].ToString()));
-                        Assert.Equal(ingredient.StockQuantity, reader["stock_quantity"]);
-                        Assert.Equal(ingredient.ThresholdLevel, reader["threshold_level"]);
-                    }
-                }
-            }
-            ClearTable();
+            ClearCollection();
         }
 
         [Fact]
         public void GetIngredient()
         {
-            ClearTable();
+            ClearCollection();
 
             var ingredient = new Ingredient
             {
@@ -111,13 +98,13 @@ namespace TestDAL.PostgresRepositoriesTests
             Assert.Equal(ingredient.Unit, ingredient.Unit);
             Assert.Equal(ingredient.StockQuantity, ingredient.StockQuantity);
             Assert.Equal(ingredient.ThresholdLevel, ingredient.ThresholdLevel);
-            ClearTable();
+            ClearCollection();
         }
 
         [Fact]
         public void DeleteIngredient()
         {
-            ClearTable();
+            ClearCollection();
             var ingredient = new Ingredient
             {
                 Name = "test_get_name",
@@ -134,13 +121,13 @@ namespace TestDAL.PostgresRepositoriesTests
             // Assert
             var deletedClient = _ingredientRepository.Get(ingredient.Id);
             Assert.Null(deletedClient);
-            ClearTable();
+            ClearCollection();
         }
 
         [Fact]
         public void GetAllIngredients()
         {
-            ClearTable();
+            ClearCollection();
             var ingredient1 = new Ingredient
             {
                 Name = "test_get_name1",
@@ -178,16 +165,16 @@ namespace TestDAL.PostgresRepositoriesTests
 
             Assert.Contains(ingredients, i => i.Name == ingredient1.Name);
             Assert.Contains(ingredients, i => i.Name == ingredient2.Name);
-            
+
             Assert.Contains(ingredients, i => i.Unit == ingredient1.Unit);
             Assert.Contains(ingredients, i => i.Unit == ingredient2.Unit);
-            ClearTable();
+            ClearCollection();
         }
 
         [Fact]
         public void UpdateIngredient()
         {
-            ClearTable();
+            ClearCollection();
             var ingredient = new Ingredient
             {
                 Name = "test_get_name",
@@ -214,7 +201,7 @@ namespace TestDAL.PostgresRepositoriesTests
             Assert.Equal(updatedIngredient.Unit, ingredient.Unit);
             Assert.Equal(updatedIngredient.StockQuantity, ingredient.StockQuantity);
             Assert.Equal(updatedIngredient.ThresholdLevel, ingredient.ThresholdLevel);
-            ClearTable();
+            ClearCollection();
         }
     }
 }

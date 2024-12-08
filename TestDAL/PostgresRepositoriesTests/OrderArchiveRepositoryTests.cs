@@ -5,12 +5,12 @@ using Npgsql;
 
 namespace TestDAL.PostgresRepositoriesTests
 {
-    public class OrdersArchiveRepositoryTests
+    public class OrderArchiveRepositoryTests
     {
         private readonly IOrderArchiveRepository _orderArchiveRepository;
         private readonly string _testPostgresConnectionString;
 
-        public OrdersArchiveRepositoryTests()
+        public OrderArchiveRepositoryTests()
         {
             // инициализация _testPostgresConnectionString внутри метода
             var serviceProvider = Configuration.ConfigureTestPostgres(out _testPostgresConnectionString);
