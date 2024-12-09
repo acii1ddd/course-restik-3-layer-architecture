@@ -5,11 +5,11 @@ using MongoDB.Driver;
 
 namespace TestDAL.MongoRepositoriesTests
 {
-    public class OrderArchiveRepositoryTests
+    public class OrderRepositoryTests
     {
-        private readonly IOrderArchiveRepository _orderArchiveRepository;
+        private readonly IOrderRepository _orderRepository;
 
-        private readonly IMongoCollection<Order> _orderArchiveCollection;
+        private readonly IMongoCollection<Order> _orderCollection;
         private readonly IMongoCollection<Client> _clientCollection;
         private readonly IMongoCollection<Worker> _workerCollection;
         private readonly IMongoCollection<Role> _roleCollection;
@@ -17,7 +17,7 @@ namespace TestDAL.MongoRepositoriesTests
         private readonly string _testMongoConnectionString;
         private readonly string _testMongoDbName;
 
-        public OrderArchiveRepositoryTests()
+        public OrderRepositoryTests()
         {
             // инициализация _testPostgresConnectionString внутри метода
             var serviceProvider = Configuration.ConfigureTestMongo(out _testMongoConnectionString, out _testMongoDbName);
@@ -25,17 +25,17 @@ namespace TestDAL.MongoRepositoriesTests
             var client = new MongoClient(_testMongoConnectionString);
             var database = client.GetDatabase(_testMongoDbName);
 
-            _orderArchiveCollection = database.GetCollection<Order>("orders_archive");
+            _orderCollection = database.GetCollection<Order>("orders");
             _clientCollection = database.GetCollection<Client>("clients");
             _workerCollection = database.GetCollection<Worker>("workers");
             _roleCollection = database.GetCollection<Role>("roles");
 
-            _orderArchiveRepository = serviceProvider.GetService<IOrderArchiveRepository>() ?? throw new InvalidOperationException("Строка подключения для TestPostgres не найдена в конфигурации.");
+            _orderRepository = serviceProvider.GetService<IOrderRepository>() ?? throw new InvalidOperationException("Строка подключения для TestPostgres не найдена в конфигурации.");
         }
 
         private void ClearCollections()
         {
-            _orderArchiveCollection.DeleteMany(Builders<Order>.Filter.Empty);
+            _orderCollection.DeleteMany(Builders<Order>.Filter.Empty);
             _clientCollection.DeleteMany(Builders<Client>.Filter.Empty);
             _workerCollection.DeleteMany(Builders<Worker>.Filter.Empty);
             _roleCollection.DeleteMany(Builders<Role>.Filter.Empty);
@@ -79,7 +79,7 @@ namespace TestDAL.MongoRepositoriesTests
         }
 
         [Fact]
-        public void AddOrderArchive()
+        public void AddOrder()
         {
             ClearCollections();
             // если уже есть роль с id = 1, то ничего не делаем и будем использовать ее, если ее нет - создали
@@ -95,24 +95,24 @@ namespace TestDAL.MongoRepositoriesTests
             try
             {
                 // Вызов метода добавления клиента, меняется Id в client
-                _orderArchiveRepository.Add(order);
+                _orderRepository.Add(order);
             }
             catch (Exception ex)
             {
                 Assert.Fail($"Ошибка при добавлении клиента: {ex.Message}");
             }
 
-            var retrievedOrder = _orderArchiveCollection.Find(o => o.Id == order.Id).FirstOrDefault();
+            var retrievedOrder = _orderCollection.Find(o => o.Id == order.Id).FirstOrDefault();
 
             // Assert
-            Assert.NotEqual(0, order.Id);
             Assert.NotNull(retrievedOrder);
+            Assert.Equal(1, order.Id);
             Assert.Equal(order.ClientId, retrievedOrder.ClientId);
 
             // в бд в utc дата
-            Assert.Equal(DateTime.UtcNow.Date, (retrievedOrder.Date).Date); // сравниваем только дату
+            Assert.Equal(order.Date.Date, (retrievedOrder.Date).Date); // сравниваем только дату
             Assert.Null(retrievedOrder.TotalCost);
-            
+
             Assert.Equal(OrderStatus.InProcessing, retrievedOrder.Status);
             Assert.Equal(PaymentStatus.Unpaid, retrievedOrder.PaymentStatus);
             Assert.Null(retrievedOrder.WaiterId);
@@ -122,8 +122,9 @@ namespace TestDAL.MongoRepositoriesTests
         }
 
         [Fact]
-        public void GetOrderArchive()
+        public void GetOrder()
         {
+            // очистка табллицы clients
             ClearCollections();
             EnsureClientExists(1, "TestClient1", "testPass", "testName");
 
@@ -136,17 +137,17 @@ namespace TestDAL.MongoRepositoriesTests
             var receivedOrder = new Order();
 
             // Act
-            receivedOrder = _orderArchiveRepository.Get(order.Id);
+            receivedOrder = _orderRepository.Get(order.Id);
             // Assert
             Assert.Null(receivedOrder); // нет клиента с таким Id - получаем null
 
-            _orderArchiveRepository.Add(order);
+            _orderRepository.Add(order);
             // Act
-            receivedOrder = _orderArchiveRepository.Get(order.Id);
+            receivedOrder = _orderRepository.Get(order.Id);
             // Assert
             Assert.NotNull(receivedOrder);
             Assert.Equal(order.ClientId, receivedOrder.ClientId);
-            Assert.Equal(DateTime.UtcNow.Date, (receivedOrder.Date).Date); // сравниваем только дату
+            Assert.Equal(order.Date.Date, (receivedOrder.Date).Date); // сравниваем только дату
             Assert.Null(receivedOrder.TotalCost);
 
             Assert.Equal(OrderStatus.InProcessing, receivedOrder.Status);
@@ -158,9 +159,8 @@ namespace TestDAL.MongoRepositoriesTests
             ClearCollections();
         }
 
-
         [Fact]
-        public void DeleteOrderArchive()
+        public void DeleteOrder()
         {
             ClearCollections();
             EnsureClientExists(1, "TestClient1", "testPass", "testName");
@@ -170,19 +170,19 @@ namespace TestDAL.MongoRepositoriesTests
                 TableNumber = 4,
             };
 
-            _orderArchiveRepository.Add(order);
+            _orderRepository.Add(order);
 
             // Act
-            _orderArchiveRepository.Delete(order);
+            _orderRepository.Delete(order);
 
             // Assert
-            var deletedClient = _orderArchiveRepository.Get(order.Id);
+            var deletedClient = _orderRepository.Get(order.Id);
             Assert.Null(deletedClient);
             ClearCollections();
         }
 
         [Fact]
-        public void GetAllOrdersArchive()
+        public void GetAllOrders()
         {
             ClearCollections();
             EnsureClientExists(1, "TestClient1", "testPass", "testName");
@@ -196,16 +196,16 @@ namespace TestDAL.MongoRepositoriesTests
             var orders = new List<Order>();
 
             // Act
-            orders = _orderArchiveRepository.GetAll().ToList();
+            orders = _orderRepository.GetAll().ToList();
 
             // Assert
             Assert.Empty(orders);
 
             // не пустой лист
-            _orderArchiveRepository.Add(order);
+            _orderRepository.Add(order);
 
             // Act
-            orders = _orderArchiveRepository.GetAll().ToList();
+            orders = _orderRepository.GetAll().ToList();
 
             // Assert
             Assert.Single(orders); // одна штука
@@ -215,7 +215,7 @@ namespace TestDAL.MongoRepositoriesTests
         }
 
         [Fact]
-        public void UpdateOrdersArchive()
+        public void UpdateOrders()
         {
             ClearCollections();
             EnsureClientExists(1, "TestClient1", "testPass", "testName");
@@ -224,7 +224,7 @@ namespace TestDAL.MongoRepositoriesTests
                 ClientId = 1,
                 TableNumber = 4
             };
-            _orderArchiveRepository.Add(order);
+            _orderRepository.Add(order);
 
             // поменяли поля для обновления старого сотрудника
             EnsureRoleExists(1, "testWaiter");
@@ -233,9 +233,9 @@ namespace TestDAL.MongoRepositoriesTests
             // client
             EnsureClientExists(2, "TestClient", "testPass", "testName");
             // waiter
-            EnsureWorkerExists(1, 1, "TestWaiter", "testPass", "+375443455555", DateTime.Now, "testName");
+            EnsureWorkerExists(1, 1, "TestWaiter", "testPass", "+375443455555", new DateTime(), "testName");
             // cook
-            EnsureWorkerExists(2, 2, "TestCook", "testPass", "+375443455544", DateTime.Now, "testName");
+            EnsureWorkerExists(2, 2, "TestCook", "testPass", "+375443455544", new DateTime(), "testName");
 
             order.ClientId = 2;
             order.Date = DateTime.Parse("2024-11-20");
@@ -247,10 +247,10 @@ namespace TestDAL.MongoRepositoriesTests
             order.TableNumber = 5;
 
             // Act
-            _orderArchiveRepository.Update(order);
+            _orderRepository.Update(order);
 
             // Assert
-            var updatedOrder = _orderArchiveRepository.Get(order.Id);
+            var updatedOrder = _orderRepository.Get(order.Id);
             Assert.NotNull(updatedOrder);
             Assert.Equal(order.ClientId, updatedOrder.ClientId);
             Assert.Equal(order.Date, (updatedOrder.Date).Date); // сравниваем только дату

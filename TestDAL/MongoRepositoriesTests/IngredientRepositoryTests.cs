@@ -31,7 +31,7 @@ namespace TestDAL.MongoRepositoriesTests
         }
 
         [Fact]
-        public void AddDish()
+        public void AddIngerdient()
         {
             ClearCollection();
             // Id = 0

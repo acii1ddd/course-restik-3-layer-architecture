@@ -1,8 +1,6 @@
 ﻿using BLL.Configuration;
-using BLL.ServiceInterfaces.DTOs;
 using BLL.ServiceInterfaces.LogicInterfaces;
 using course_work.Handlers;
-using DAL.Entities;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
