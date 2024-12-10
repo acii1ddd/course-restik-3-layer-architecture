@@ -55,12 +55,12 @@ namespace DAL.MongoRepositories
 
         private int GenerateNextId()
         {
-            var lastDish = _collection
+            var lastIngredient = _collection
                 .Find(FilterDefinition<Ingredient>.Empty)
                 .SortByDescending(d => d.Id) // самый большой Id (последний)
                 .FirstOrDefault();
 
-            return lastDish == null ? 1 : lastDish.Id + 1;
+            return lastIngredient == null ? 1 : lastIngredient.Id + 1;
         }
     }
 }

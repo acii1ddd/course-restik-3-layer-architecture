@@ -20,7 +20,7 @@ namespace DAL.Entities
         public string PhoneNumber { get; set; } = string.Empty;
 
         [BsonElement("hire_date")]
-        public DateTime HireDate { get; set; } = DateTime.Now.Date; // optional, current date by default
+        public DateTime HireDate { get; set; } = DateTime.Now; // optional, current date by default
 
         [BsonElement("full_name")]
         public string FullName { get; set; } = string.Empty;

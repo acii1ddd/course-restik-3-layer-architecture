@@ -1,4 +1,5 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace DAL.Entities
 {
@@ -17,6 +18,7 @@ namespace DAL.Entities
         public decimal Quantity { get; set; }
 
         [BsonElement("unit")]
+        [BsonRepresentation(BsonType.String)] // сериализация как строка
         public UnitsOfMeasurement Unit { get; set; }
     }
 }

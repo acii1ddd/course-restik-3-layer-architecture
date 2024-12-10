@@ -70,12 +70,12 @@ namespace DAL.MongoRepositories
 
         private int GenerateNextId()
         {
-            var lastDish = _collection
+            var lastOrderItem = _collection
                 .Find(FilterDefinition<OrderItem>.Empty)
                 .SortByDescending(d => d.Id) // самый большой Id (последний)
                 .FirstOrDefault();
 
-            return lastDish == null ? 1 : lastDish.Id + 1;
+            return lastOrderItem == null ? 1 : lastOrderItem.Id + 1;
         }
 
         private void RecalculateOrderTotalCost(int orderId)

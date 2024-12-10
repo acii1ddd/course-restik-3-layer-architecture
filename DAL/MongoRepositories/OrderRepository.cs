@@ -71,12 +71,12 @@ namespace DAL.MongoRepositories
 
         private int GenerateNextId()
         {
-            var lastDish = _collection
+            var lastOrder = _collection
                 .Find(FilterDefinition<Order>.Empty)
                 .SortByDescending(d => d.Id) // самый большой Id (последний)
                 .FirstOrDefault();
 
-            return lastDish == null ? 1 : lastDish.Id + 1;
+            return lastOrder == null ? 1 : lastOrder.Id + 1;
         }
 
         private DateTime ConvertToLocal(DateTime utcDate)

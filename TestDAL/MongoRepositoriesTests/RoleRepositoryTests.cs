@@ -1,41 +1,40 @@
 ﻿using DAL.Entities;
 using DAL.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
+using MongoDB.Driver;
 using Npgsql;
 
-namespace TestDAL.PostgresRepositoriesTests
+namespace TestDAL.MongoRepositoriesTests
 {
     public class RoleRepositoryTests
     {
         private readonly IRoleRepository _roleRepository;
-        private readonly string _testPostgresConnectionString;
+        private readonly IMongoCollection<Role> _roleCollection;
+        
+        private readonly string _testMongoConnectionString;
+        private readonly string _testMongoDbName;
 
         public RoleRepositoryTests()
         {
             // инициализация _testPostgresConnectionString внутри метода
-            var serviceProvider = Configuration.ConfigureTestPostgres(out _testPostgresConnectionString);
+            var serviceProvider = Configuration.ConfigureTestMongo(out _testMongoConnectionString, out _testMongoDbName);
+
+            var client = new MongoClient(_testMongoConnectionString);
+            var database = client.GetDatabase(_testMongoDbName);
+
+            _roleCollection = database.GetCollection<Role>("roles");
             _roleRepository = serviceProvider.GetService<IRoleRepository>() ?? throw new InvalidOperationException("Строка подключения для TestPostgres не найдена в конфигурации.");
         }
 
-        private void ClearTable()
+        private void ClearCollections()
         {
-            using (var connection = new NpgsqlConnection(_testPostgresConnectionString))
-            {
-                connection.Open();
-                var query = "TRUNCATE TABLE roles RESTART IDENTITY CASCADE";
-
-                using (var command = new NpgsqlCommand(query, connection))
-                {
-                    command.ExecuteNonQuery();
-                }
-            }
+            _roleCollection.DeleteMany(Builders<Role>.Filter.Empty);
         }
 
         [Fact]
-        public void AddRole_ShouldAddRole()
+        public void AddRole()
         {
-            ClearTable();
-            // Id = 0
+            ClearCollections();
             var role = new Role
             {
                 Name = "test_add_role",
@@ -51,34 +50,20 @@ namespace TestDAL.PostgresRepositoriesTests
                 Assert.Fail($"Ошибка при добавлении клиента: {ex.Message}");
             }
 
+            // гетнуть из бд
+            var retrievedRole = _roleCollection.Find(r => r.Id == role.Id).FirstOrDefault();
+
             // Assert
-            Assert.NotEqual(0, role.Id);
+            Assert.Equal(1, role.Id);
+            Assert.Equal(role.Name, retrievedRole.Name);
 
-            using (var connection = new NpgsqlConnection(_testPostgresConnectionString))
-            {
-                connection.Open();
-                var query = "SELECT * FROM roles WHERE id = @id";
-
-                using (var command = new NpgsqlCommand(query, connection))
-                {
-                    command.Parameters.AddWithValue("id", role.Id); // autoinc в бд
-
-                    using (var reader = command.ExecuteReader())
-                    {
-                        // true если reader вернет true, исключение с сообщением "Role not found in database." - если false
-                        Assert.True(reader.Read(), "Role not found in database."); // проверка reader на true/false
-                        Assert.Equal(role.Name, reader["name"]);
-                    }
-                }
-            }
-            ClearTable();
+            ClearCollections();
         }
 
         [Fact]
-        public void GetRole_ShouldReturnRole()
+        public void GetRole()
         {
-            // очистка табллицы clients
-            ClearTable();
+            ClearCollections();
 
             var role = new Role()
             {
@@ -98,13 +83,13 @@ namespace TestDAL.PostgresRepositoriesTests
             // Assert
             Assert.NotNull(receivedRole);
             Assert.Equal(role.Name, receivedRole.Name);
-            ClearTable();
+            ClearCollections();
         }
 
         [Fact]
-        public void DeleteRole_ShouldDeleteRole()
+        public void DeleteRole()
         {
-            ClearTable();
+            ClearCollections();
             var role = new Role()
             {
                 Name = "test_delete_role"
@@ -118,13 +103,13 @@ namespace TestDAL.PostgresRepositoriesTests
             // Assert
             var deletedClient = _roleRepository.Get(role.Id);
             Assert.Null(deletedClient);
-            ClearTable();
+            ClearCollections();
         }
 
         [Fact]
-        public void GetAllRoles_ShouldReturnAllRoles()
+        public void GetAllRoles()
         {
-            ClearTable();
+            ClearCollections();
             var role1 = new Role()
             {
                 Name = "test_getAll_role_name1"
@@ -156,13 +141,13 @@ namespace TestDAL.PostgresRepositoriesTests
 
             Assert.Contains(roles, c => c.Name == role1.Name);
             Assert.Contains(roles, c => c.Name == role2.Name);
-            ClearTable();
+            ClearCollections();
         }
 
         [Fact]
-        public void UpdateRole_ShouldUpdateExistingRole()
+        public void UpdateRole()
         {
-            ClearTable();
+            ClearCollections();
             var role = new Role()
             {
                 Name = "test_role_update_name"
@@ -179,7 +164,7 @@ namespace TestDAL.PostgresRepositoriesTests
             var updatedRole = _roleRepository.Get(role.Id);
             Assert.NotNull(updatedRole);
             Assert.Equal(updatedRole.Name, role.Name);
-            ClearTable();
+            ClearCollections();
         }
     }
 }

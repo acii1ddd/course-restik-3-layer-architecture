@@ -33,24 +33,24 @@ namespace DAL.MongoRepositories
         public Order? Get(int id)
         {
             var filter = Builders<Order>.Filter.Eq(d => d.Id, id);
-            var order = _collection.Find(filter).FirstOrDefault();
-            if (order != null)
+            var orderArchive = _collection.Find(filter).FirstOrDefault();
+            if (orderArchive != null)
             {
                 // преобразуем дату из UTC в локальный часовой пояс
-                order.Date = ConvertToLocal(order.Date);
+                orderArchive.Date = ConvertToLocal(orderArchive.Date);
             }
-            return order;
+            return orderArchive;
         }
 
         public IEnumerable<Order> GetAll()
         {
-            var orders = _collection.Find(FilterDefinition<Order>.Empty).ToList();
-            foreach (var order in orders)
+            var ordersArchive = _collection.Find(FilterDefinition<Order>.Empty).ToList();
+            foreach (var order in ordersArchive)
             {
                 // Преобразуем дату из UTC в локальный часовой пояс
                 order.Date = ConvertToLocal(order.Date);
             }
-            return orders;
+            return ordersArchive;
         }
 
         /// <summary>
@@ -76,12 +76,12 @@ namespace DAL.MongoRepositories
 
         private int GenerateNextId()
         {
-            var lastDish = _collection
+            var lastOrderArchive = _collection
                 .Find(FilterDefinition<Order>.Empty)
                 .SortByDescending(d => d.Id) // самый большой Id (последний)
                 .FirstOrDefault();
 
-            return lastDish == null ? 1 : lastDish.Id + 1;
+            return lastOrderArchive == null ? 1 : lastOrderArchive.Id + 1;
         }
 
         private DateTime ConvertToLocal(DateTime utcDate)

@@ -23,14 +23,13 @@ namespace DAL.Configuration
 
         public static void ConfigureMongo(this IServiceCollection services, string connection, string databaseName)
         {
-
             services.AddScoped<IClientRepository>(provider => new DAL.MongoRepositories.ClientRepository(connection, databaseName, "clients"));
-            //services.AddScoped<IWorkerRepository>(provider => new DAL.MongoRepositories.WorkerRepository(connection));
-            //services.AddScoped<IRoleRepository>(provider => new DAL.MongoRepositories.RoleRepository(connection));
+            services.AddScoped<IWorkerRepository>(provider => new DAL.MongoRepositories.WorkerRepository(connection, databaseName, "workers"));
+            services.AddScoped<IRoleRepository>(provider => new DAL.MongoRepositories.RoleRepository(connection, databaseName, "roles"));
             services.AddScoped<IDishRepository>(provider => new DAL.MongoRepositories.DishRepository(connection, databaseName, "dishes"));
             services.AddScoped<IIngredientRepository>(provider => new DAL.MongoRepositories.IngredientRepository(connection, databaseName, "ingredients"));
-            //services.AddScoped<IRecipeRepository>(provider => new DAL.MongoRepositories.RecipeRepository(connection));
-            //services.AddScoped<IPaymentRepository>(provider => new DAL.MongoRepositories.PaymentRepository(connection));
+            services.AddScoped<IRecipeRepository>(provider => new DAL.MongoRepositories.RecipeRepository(connection, databaseName, "recipes"));
+            services.AddScoped<IPaymentRepository>(provider => new DAL.MongoRepositories.PaymentRepository(connection, databaseName, "payments"));
 
             services.AddScoped<IOrderRepository>(provider => new DAL.MongoRepositories.OrderRepository(connection, databaseName, "orders"));
             services.AddScoped<IOrderItemRepository>(provider => new DAL.MongoRepositories.OrderItemRepository(connection, databaseName, "orders_items"));
@@ -45,11 +44,12 @@ namespace DAL.Configuration
             services.AddScoped<IWorkerRepository>(provider => new WorkerRepository(connection));
             services.AddScoped<IRoleRepository>(provider => new RoleRepository(connection));
             services.AddScoped<IDishRepository>(provider => new DishRepository(connection));
-            services.AddScoped<IOrderRepository>(provider => new OrderRepository(connection));
-            services.AddScoped<IOrderItemRepository>(provider => new OrderItemRepository(connection));
             services.AddScoped<IIngredientRepository>(provider => new IngredientRepository(connection));
             services.AddScoped<IRecipeRepository>(provider => new RecipeRepository(connection));
             services.AddScoped<IPaymentRepository>(provider => new PaymentRepository(connection));
+
+            services.AddScoped<IOrderRepository>(provider => new OrderRepository(connection));
+            services.AddScoped<IOrderItemRepository>(provider => new OrderItemRepository(connection));
 
             services.AddScoped<IOrderArchiveRepository>(provider => new OrderArchiveRepository(connection));
             services.AddScoped<IOrderItemArchiveRepository>(provider => new OrderItemArchiveRepository(connection));

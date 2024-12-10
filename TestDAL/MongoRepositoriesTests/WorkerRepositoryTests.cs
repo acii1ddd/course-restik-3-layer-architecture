@@ -1,74 +1,60 @@
 ﻿using DAL.Entities;
 using DAL.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
-using Npgsql;
+using MongoDB.Driver;
 
-namespace TestDAL.PostgresRepositoriesTests
+namespace TestDAL.MongoRepositoriesTests
 {
     public class WorkerRepositoryTests
     {
         private readonly IWorkerRepository _workerRepository;
-        private readonly string _testPostgresConnectionString;
+        private readonly IRoleRepository _roleRepository;
+
+        private readonly IMongoCollection<Role> _roleCollection;
+        private readonly IMongoCollection<Worker> _workerCollection;
+
+        private readonly string _testMongoConnectionString;
+        private readonly string _testMongoDbName;
 
         public WorkerRepositoryTests()
         {
             // инициализация _testPostgresConnectionString внутри метода
-            var serviceProvider = Configuration.ConfigureTestPostgres(out _testPostgresConnectionString);
+            var serviceProvider = Configuration.ConfigureTestMongo(out _testMongoConnectionString, out _testMongoDbName);
+
+            var client = new MongoClient(_testMongoConnectionString);
+            var database = client.GetDatabase(_testMongoDbName);
+
+            _roleCollection = database.GetCollection<Role>("roles");
+            _workerCollection = database.GetCollection<Worker>("workers");
+
             _workerRepository = serviceProvider.GetService<IWorkerRepository>() ?? throw new InvalidOperationException("Строка подключения для TestPostgres не найдена в конфигурации.");
+            _roleRepository = serviceProvider.GetService<IRoleRepository>() ?? throw new InvalidOperationException("Строка подключения для TestPostgres не найдена в конфигурации.");
         }
 
-        private void ClearTable()
+        private void ClearCollections()
         {
-            using (var connection = new NpgsqlConnection(_testPostgresConnectionString))
-            {
-                connection.Open();
-                var query = "TRUNCATE TABLE workers RESTART IDENTITY CASCADE";
-
-                using (var command = new NpgsqlCommand(query, connection))
-                {
-                    command.ExecuteNonQuery();
-                }
-            }
+            _roleCollection.DeleteMany(Builders<Role>.Filter.Empty);
+            _workerCollection.DeleteMany(Builders<Worker>.Filter.Empty);
         }
 
-        private void ClearTableRoles()
+        private Role ShureRoleExists(string roleName)
         {
-            using (var connection = new NpgsqlConnection(_testPostgresConnectionString))
+            var role = new Role
             {
-                connection.Open();
-                var query = "TRUNCATE TABLE roles RESTART IDENTITY CASCADE";
+                Name = roleName
+            };
+            _roleRepository.Add(role);
 
-                using (var command = new NpgsqlCommand(query, connection))
-                {
-                    command.ExecuteNonQuery();
-                }
-            }
+            return role;
         }
-
-        private void ShureRoleExists(int id, string roleName)
-        {
-            using (var connection = new NpgsqlConnection(_testPostgresConnectionString))
-            {
-                connection.Open();
-                var query = "INSERT INTO roles (id, name) VALUES (@id, @roleName) ON CONFLICT DO NOTHING";
-
-                using (var command = new NpgsqlCommand(query, connection))
-                {
-                    command.Parameters.AddWithValue("@id", id);
-                    command.Parameters.AddWithValue("@roleName", roleName);
-                    command.ExecuteNonQuery();
-                }
-            }
-        }
-
 
         // добавление worrker без узказания даты (current date в базе данных)
         [Fact]
-        public void AddWorker_ShouldAddWorker()
+        public void AddWorker()
         {
-            ClearTable();
+            ClearCollections();
             // если уже есть роль с id = 1, то ничего не делаем и будем использовать ее, если ее нет - создали
-            ShureRoleExists(1, "TestRole1");
+            ShureRoleExists("TestRole1");
 
             // Id = 0
             var worker = new Worker
@@ -90,41 +76,25 @@ namespace TestDAL.PostgresRepositoriesTests
                 Assert.Fail($"Ошибка при добавлении клиента: {ex.Message}");
             }
 
+            var retrievedWorker = _workerCollection.Find(r => r.Id == worker.Id).FirstOrDefault();
+
             // Assert
-            Assert.NotEqual(0, worker.Id);
-
-            using (var connection = new NpgsqlConnection(_testPostgresConnectionString))
-            {
-                connection.Open();
-                var query = "SELECT * FROM workers WHERE id = @id";
-
-                using (var command = new NpgsqlCommand(query, connection))
-                {
-                    command.Parameters.AddWithValue("id", worker.Id); // autoinc в бд
-
-                    using (var reader = command.ExecuteReader())
-                    {
-                        // true если reader вернет true, исключение с сообщением "Worker not found in database." - если false
-                        Assert.True(reader.Read(), "Role not found in database."); // проверка reader на true/false
-                        Assert.Equal(worker.RoleId, reader["role_id"]);
-                        Assert.Equal(worker.Login, reader["login"]);
-                        Assert.Equal(worker.Password, reader["password"]);
-                        Assert.Equal(worker.PhoneNumber, reader["phone_number"]);
-                        Assert.Equal(DateTime.UtcNow.Date, reader["hire_date"]); // текущая дата дается в бд
-                        Assert.Equal(worker.FullName, reader["full_name"]);
-                    }
-                }
-            }
-            ClearTable();
-            ClearTableRoles();
+            Assert.Equal(1, worker.Id);
+            Assert.Equal(worker.RoleId, retrievedWorker.RoleId);
+            Assert.Equal(worker.Login, retrievedWorker.Login);
+            Assert.Equal(worker.Password, retrievedWorker.Password);
+            Assert.Equal(worker.PhoneNumber, retrievedWorker.PhoneNumber);
+            Assert.Equal(DateTime.UtcNow.Date, retrievedWorker.HireDate.Date); // текущая дата в бд в utc
+            Assert.Equal(worker.FullName, retrievedWorker.FullName);
+            
+            ClearCollections();
         }
 
         [Fact]
-        public void GetWorker_ShouldReturnWorker()
+        public void GetWorker()
         {
-            // очистка табллицы clients
-            ClearTable();
-            ShureRoleExists(1, "TestRole1");
+            ClearCollections();
+            ShureRoleExists("TestRole1");
 
             var worker = new Worker
             {
@@ -151,17 +121,16 @@ namespace TestDAL.PostgresRepositoriesTests
             Assert.Equal(worker.Login, receivedWorker.Login);
             Assert.Equal(worker.Password, receivedWorker.Password);
             Assert.Equal(worker.PhoneNumber, receivedWorker.PhoneNumber);
-            Assert.Equal(DateTime.UtcNow.Date, receivedWorker.HireDate); // текущая дата из базы данных
+            Assert.Equal(worker.HireDate.ToString("yyyy-MM-dd HH:mm:ss"), receivedWorker.HireDate.ToString("yyyy-MM-dd HH:mm:ss")); // текущая дата из базы данных
             Assert.Equal(worker.FullName, receivedWorker.FullName);
-            ClearTable();
-            ClearTableRoles();
+            ClearCollections();
         }
 
         [Fact]
-        public void DeleteWorker_ShouldDeleteWorker()
+        public void DeleteWorker()
         {
-            ClearTable();
-            ShureRoleExists(1, "TestRole1");
+            ClearCollections();
+            ShureRoleExists("TestRole1");
             var worker = new Worker
             {
                 RoleId = 1,
@@ -179,15 +148,14 @@ namespace TestDAL.PostgresRepositoriesTests
             // Assert
             var deletedClient = _workerRepository.Get(worker.Id);
             Assert.Null(deletedClient);
-            ClearTable();
-            ClearTableRoles();
+            ClearCollections();
         }
 
         [Fact]
-        public void GetAllWorkers_ShouldReturnAllWorkers()
+        public void GetAllWorkers()
         {
-            ClearTable();
-            ShureRoleExists(1, "TestRole1");
+            ClearCollections();
+            ShureRoleExists("TestRole1");
             var worker1 = new Worker
             {
                 RoleId = 1,
@@ -214,19 +182,17 @@ namespace TestDAL.PostgresRepositoriesTests
 
             // Assert
             Assert.Single(workers); // одна штука
-
             Assert.Contains(workers, w => w.Login == worker1.Login);
             Assert.Contains(workers, w => w.Password == worker1.Password);
             Assert.Contains(workers, w => w.PhoneNumber == worker1.PhoneNumber);
-            ClearTable();
-            ClearTableRoles();
+            ClearCollections();
         }
 
         [Fact]
-        public void UpdateWorker_ShouldUpdateExistingWorker()
+        public void UpdateWorker()
         {
-            ClearTable();
-            ShureRoleExists(1, "TestRole1");
+            ClearCollections();
+            ShureRoleExists("TestRole1");
             var worker = new Worker
             {
                 RoleId = 1,
@@ -238,7 +204,7 @@ namespace TestDAL.PostgresRepositoriesTests
             _workerRepository.Add(worker);
 
             // поменяли поля для обновления старого сотрудника
-            ShureRoleExists(2, "TestRole2");
+            ShureRoleExists("TestRole2");
             worker.RoleId = 2;
             worker.Login = "updated_login";
             worker.Password = "updated_pass";
@@ -255,23 +221,23 @@ namespace TestDAL.PostgresRepositoriesTests
             Assert.Equal(updatedWorker.Login, worker.Login);
             Assert.Equal(updatedWorker.Password, worker.Password);
             Assert.Equal(updatedWorker.PhoneNumber, worker.PhoneNumber);
+            Assert.Equal(updatedWorker.HireDate.ToString("yyyy-MM-dd HH:mm:ss"), worker.HireDate.ToString("yyyy-MM-dd HH:mm:ss"));
             Assert.Equal(updatedWorker.FullName, worker.FullName);
-            ClearTable();
-            ClearTableRoles();
+            ClearCollections();
         }
 
         [Fact]
         public void GetWorkerByLogin_ReturnsWorkerOrNULL()
         {
-            ClearTable();
-            ShureRoleExists(1, "TestRole1");
+            ClearCollections();
+            ShureRoleExists("TestRole1");
             var worker = new Worker
             {
                 RoleId = 1,
-                Login = "test_getById_worker",
-                Password = "test_getById_pass",
-                PhoneNumber = "test_getById_phone",
-                FullName = "test_getById_name"
+                Login = "test_getByLog_worker",
+                Password = "test_getByLog_pass",
+                PhoneNumber = "test_getByLog_phone",
+                FullName = "test_getByLog_name"
             };
 
             // нет сотрудника с таким логином
@@ -292,11 +258,10 @@ namespace TestDAL.PostgresRepositoriesTests
             Assert.Equal(receivedWorker.Login, worker.Login);
             Assert.Equal(receivedWorker.Password, worker.Password);
             Assert.Equal(receivedWorker.PhoneNumber, worker.PhoneNumber);
-            Assert.Equal(receivedWorker.HireDate, DateTime.UtcNow.Date);
+            Assert.Equal(receivedWorker.HireDate.ToString("yyyy-MM-dd HH:mm:ss"), worker.HireDate.ToString("yyyy-MM-dd HH:mm:ss"));
             Assert.Equal(receivedWorker.FullName, worker.FullName);
-            
-            ClearTable();
-            ClearTableRoles();
+
+            ClearCollections();
         }
     }
 }

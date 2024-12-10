@@ -59,12 +59,12 @@ namespace DAL.MongoRepositories
 
         private int GenerateNextId()
         {
-            var lastDish = _collection
+            var lastOrderItemArchive = _collection
                 .Find(FilterDefinition<OrderItem>.Empty)
                 .SortByDescending(d => d.Id) // самый большой Id (последний)
                 .FirstOrDefault();
 
-            return lastDish == null ? 1 : lastDish.Id + 1;
+            return lastOrderItemArchive == null ? 1 : lastOrderItemArchive.Id + 1;
         }
     }
 }

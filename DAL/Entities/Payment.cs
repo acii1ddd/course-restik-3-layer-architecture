@@ -1,4 +1,5 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace DAL.Entities
 {
@@ -11,6 +12,7 @@ namespace DAL.Entities
         public DateTime PaymentDate { get; set; } = DateTime.Now;
 
         [BsonElement("payment_method")]
+        [BsonRepresentation(BsonType.String)] // сериализация как строка
         public PaymentMethod PaymentMethod { get; set; }
 
         [BsonElement("order_id")]
