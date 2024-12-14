@@ -39,7 +39,7 @@ namespace BLL.Services.LogicServices
         }
 
         // если есть клиент с таким логином и паролем возвр его dto, если нету - null
-        public ClientDTO? CheckClient(string login, string password)
+        private ClientDTO? CheckClient(string login, string password)
         {
             var client = _clientRepository.GetByLogin(login);
             if (client != null && client.Password == password)
@@ -50,7 +50,7 @@ namespace BLL.Services.LogicServices
         }
 
         // если есть сотрудник с таким логином и паролем возвр его dto, если нету - null
-        public WorkerDTO? CheckWorker(string login, string password)
+        private WorkerDTO? CheckWorker(string login, string password)
         {
             var worker = _workerRepository.GetByLogin(login);
             if (worker != null && worker.Password == password)

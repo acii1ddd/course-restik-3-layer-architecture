@@ -84,7 +84,7 @@ namespace TestDAL.PostgresRepositoriesTests
             return orderItem;
         }
 
-        [Fact]
+        [Fact(DisplayName = "Добавление позиции архивного заказа: должен вызвать метод Add()")]
         public void AddOrderItemArchive()
         {
             ClearAllTables();
@@ -128,7 +128,7 @@ namespace TestDAL.PostgresRepositoriesTests
         }
 
 
-        [Fact]
+        [Fact(DisplayName = "Получение позиции архивного заказа по Id: должен вернуть позицию заказа либо null при ее отсутствии")]
         public void GetOrderItemArchive()
         {
             ClearAllTables();
@@ -155,7 +155,7 @@ namespace TestDAL.PostgresRepositoriesTests
             ClearAllTables();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Удаление позиции архивного заказа: должен вызвать метод Delete()")]
         public void DeleteOrderItemArchive()
         {
             ClearAllTables();
@@ -173,7 +173,7 @@ namespace TestDAL.PostgresRepositoriesTests
             ClearAllTables();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Получение всех позиций архивных заказов: должен вернуть список позиций заказов либо пустой список")]
         public void GetAllOrderItemsArchive()
         {
             ClearAllTables();
@@ -207,7 +207,7 @@ namespace TestDAL.PostgresRepositoriesTests
             ClearAllTables();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Обновление позиции архивного заказа: должен вызвать метод Update()")]
         public void UpdateOrderItemArchive()
         {
             ClearAllTables();

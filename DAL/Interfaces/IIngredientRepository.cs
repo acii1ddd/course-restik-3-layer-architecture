@@ -2,7 +2,7 @@
 
 namespace DAL.Interfaces
 {
-    public interface IIngredientRepository:IRepository<Ingredient>
+    public interface IIngredientRepository : IRepository<Ingredient>
     {
 
     }

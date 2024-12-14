@@ -30,7 +30,7 @@ namespace course_work.Views
             {
                 string orderStatusDescription = HelperUI.GetOrderStatusDescription(orders[i].Status);
                 string paymentStatusDescription = HelperUI.GetPaymentStatusDescription(orders[i].PaymentStatus);
-                Console.WriteLine($"\nЗаказ {i + 1}. Клиент: {orders[i].Client.Name}, Столик: {orders[i].TableNumber}, Общая стоимость: {orders[i].TotalCost}, Статус: {orderStatusDescription}, Статус оплаты: {paymentStatusDescription} \nДата: {orders[i].Date.ToString("dd.MM.yyyy HH.mm")}");
+                Console.WriteLine($"\nЗаказ {i + 1}. Клиент: {orders[i].Client.Name}, Столик: {orders[i].TableNumber}, Общая стоимость: {orders[i].TotalCost} \nСтатус: {orderStatusDescription}, Статус оплаты: {paymentStatusDescription}, Дата: {orders[i].Date.ToString("dd.MM.yyyy HH.mm")}");
 
                 var dishesTable = new ConsoleTable("№", "Имя блюда", "Количество", "Цена");
                 // по блюдам текущего заказа (по orderItem'ам)

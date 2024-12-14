@@ -160,7 +160,7 @@ namespace course_work.Handlers
             try
             {
                 var unpaidOrders = _waiterService.GetCurrentUnpaidOrders(worker);
-                _waiterView.PrintOrders(unpaidOrders, "Не оплаченные заказы:");
+                _waiterView.PrintOrders(unpaidOrders, "Заказы, ожидающие оплаты: ");
 
                 return unpaidOrders.Count() == 0 ? false : true;
             }

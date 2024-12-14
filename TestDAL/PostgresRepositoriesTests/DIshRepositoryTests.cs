@@ -31,7 +31,7 @@ namespace TestDAL.PostgresRepositoriesTests
             }
         }
 
-        [Fact]
+        [Fact(DisplayName = "Добавление блюда: должен вызвать метод Add()")]
         public void AddDish()
         {
             ClearTable();
@@ -77,7 +77,7 @@ namespace TestDAL.PostgresRepositoriesTests
             ClearTable();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Получение блюда по Id: должен вернуть блюдо либо null при его отсутствии")]
         public void GetDish()
         {
             ClearTable();
@@ -108,7 +108,7 @@ namespace TestDAL.PostgresRepositoriesTests
             ClearTable();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Удаление блюда: должен вызвать метод Delete()")]
         public void DeleteDish()
         {
             ClearTable();
@@ -129,7 +129,7 @@ namespace TestDAL.PostgresRepositoriesTests
             ClearTable();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Получение всех блюд: должен вернуть список блюд либо пустой список")]
         public void GetAllDishes()
         {
             ClearTable();
@@ -169,7 +169,7 @@ namespace TestDAL.PostgresRepositoriesTests
             ClearTable();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Обновление блюда: должен вызвать метод Update()")]
         public void UpdateDishes()
         {
             ClearTable();

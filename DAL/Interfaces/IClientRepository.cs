@@ -2,7 +2,7 @@
 
 namespace DAL.Interfaces
 {
-    public interface IClientRepository:IRepository<Client>
+    public interface IClientRepository : IRepository<Client>
     {
         Client? GetByLogin(string login);
     }

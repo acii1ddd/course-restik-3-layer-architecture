@@ -2,7 +2,7 @@
 
 namespace DAL.Interfaces
 {
-    public interface IDishRepository:IRepository<Dish>
+    public interface IDishRepository : IRepository<Dish>
     {
 
     }

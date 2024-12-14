@@ -87,7 +87,7 @@ namespace TestDAL.PostgresRepositoriesTests
             }
         }
 
-        [Fact]
+        [Fact(DisplayName = "Добавление заказа: должен вызвать метод Add()")]
         public void AddOrder()
         {
             ClearTable("orders");
@@ -152,7 +152,7 @@ namespace TestDAL.PostgresRepositoriesTests
             ClearTable("orders");
         }
 
-        [Fact]
+        [Fact(DisplayName = "Получение заказа по Id: должен вернуть заказ либо null при его отсутствии")]
         public void GetOrder()
         {
             // очистка табллицы clients
@@ -191,7 +191,7 @@ namespace TestDAL.PostgresRepositoriesTests
             ClearTable("orders");
         }
 
-        [Fact]
+        [Fact(DisplayName = "Удаление заказа: должен вызвать метод Delete()")]
         public void DeleteOrder()
         {
             ClearTable("orders");
@@ -214,7 +214,7 @@ namespace TestDAL.PostgresRepositoriesTests
             ClearTable("orders");
         }
 
-        [Fact]
+        [Fact(DisplayName = "Получение всех заказов: должен вернуть список заказов либо пустой список")]
         public void GetAllOrders()
         {
             ClearTable("orders");
@@ -248,7 +248,7 @@ namespace TestDAL.PostgresRepositoriesTests
             ClearTable("orders");
         }
 
-        [Fact]
+        [Fact(DisplayName = "Обновление заказа: должен вызвать метод Update()")]
         public void UpdateOrders()
         {
             ClearTable("orders");

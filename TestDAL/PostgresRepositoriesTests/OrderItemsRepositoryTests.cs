@@ -84,7 +84,7 @@ namespace TestDAL.PostgresRepositoriesTests
             return orderItem;
         }
 
-        [Fact]
+        [Fact(DisplayName = "Добавление позиции заказа: должен вызвать метод Add()")]
         public void AddOrderItem()
         {
             ClearAllTables();
@@ -126,7 +126,7 @@ namespace TestDAL.PostgresRepositoriesTests
             ClearAllTables();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Получение позиции заказа по Id: должен вернуть позицию заказа либо null при ее отсутствии")]
         public void GetOrderItem()
         {
             ClearAllTables();
@@ -153,9 +153,10 @@ namespace TestDAL.PostgresRepositoriesTests
             ClearAllTables();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Удаление позиции заказа: должен вызвать метод Delete()")]
         public void DeleteOrderItem()
         {
+            // переписать, сделать запись в orders_archive
             ClearAllTables();
 
             OrderItem orderItem = CreateTestOrderItemWithOrderIdAndDishId(1, 1);
@@ -171,7 +172,7 @@ namespace TestDAL.PostgresRepositoriesTests
             ClearAllTables();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Получение всех позиций заказов: должен вернуть список позиций заказов либо пустой список")]
         public void GetAllOrderItems()
         {
             ClearAllTables();
@@ -205,7 +206,7 @@ namespace TestDAL.PostgresRepositoriesTests
             ClearAllTables();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Обновление позиции заказа: должен вызвать метод Update()")]
         public void UpdateOrderItem()
         {
             ClearAllTables();

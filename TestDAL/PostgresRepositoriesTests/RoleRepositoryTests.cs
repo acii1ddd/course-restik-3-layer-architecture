@@ -31,7 +31,7 @@ namespace TestDAL.PostgresRepositoriesTests
             }
         }
 
-        [Fact]
+        [Fact(DisplayName = "Добавление должности: должен вызвать метод Add()")]
         public void AddRole_ShouldAddRole()
         {
             ClearTable();
@@ -74,7 +74,7 @@ namespace TestDAL.PostgresRepositoriesTests
             ClearTable();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Получение должности по Id: должен вернуть должность либо null при ее отсутствии")]
         public void GetRole_ShouldReturnRole()
         {
             // очистка табллицы clients
@@ -101,7 +101,7 @@ namespace TestDAL.PostgresRepositoriesTests
             ClearTable();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Удаление должности: должен вызвать метод Delete()")]
         public void DeleteRole_ShouldDeleteRole()
         {
             ClearTable();
@@ -121,7 +121,7 @@ namespace TestDAL.PostgresRepositoriesTests
             ClearTable();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Получение всех должностей: должен вернуть список всех должностей либо пустой список")]
         public void GetAllRoles_ShouldReturnAllRoles()
         {
             ClearTable();
@@ -159,7 +159,7 @@ namespace TestDAL.PostgresRepositoriesTests
             ClearTable();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Обновление должности: должен вызвать метод Update()")]
         public void UpdateRole_ShouldUpdateExistingRole()
         {
             ClearTable();

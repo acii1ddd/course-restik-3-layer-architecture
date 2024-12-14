@@ -5,9 +5,11 @@ using BLL.ServiceInterfaces.LogicInterfaces;
 using BLL.ServiceInterfaces.ValidatorInterfaces;
 using BLL.ServiceInterfaces.ValidatorsInterfaces;
 using BLL.Services;
+using BLL.Services.ArchiveHandlers;
 using BLL.Services.LogicServices;
 using BLL.Services.Validators;
 using BLL.Services.ValidatorsServices;
+using DAL.ArchiveHandlers;
 using DAL.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -46,6 +48,15 @@ namespace BLL.Configuration
             services.AddTransient<ICookValidatorService, CookValidatorService>();
             services.AddTransient<IWaiterValidatorService, WaiterValidatorService>();
             services.AddTransient<IAdminValidatorService, AdminValidatorService>();
+
+            if (type == "mongo")
+            {
+                services.AddTransient<IArchiveHandler, MongoArchiveHandler>();
+            }
+            else if (type == "postgres")
+            {
+                services.AddTransient<IArchiveHandler, PostgresArchiveHandler>();
+            }
         }
     }
 }

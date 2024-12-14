@@ -1,7 +1,5 @@
-using DAL.Configuration;
 using DAL.Entities;
 using DAL.Interfaces;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
 
@@ -36,7 +34,7 @@ namespace TestDAL.PostgresRepositoriesTests
             }
         }
 
-        [Fact]
+        [Fact(DisplayName = "ƒобавление клиента: должен вызвать метод Add()")]
         public void AddClient_ShouldAddClient() // пока без async
         {
             ClearTable();
@@ -83,7 +81,7 @@ namespace TestDAL.PostgresRepositoriesTests
             ClearTable();
         }
 
-        [Fact]
+        [Fact(DisplayName = "ѕолучение клиента по Id: должен вернуть клиента либо null при его отсутствии")]
         public void GetClient_ShouldReturnClientById()
         {
             // очистка табллицы clients
@@ -116,7 +114,7 @@ namespace TestDAL.PostgresRepositoriesTests
             ClearTable();
         }
 
-        [Fact]
+        [Fact(DisplayName = "”даление клиента: должен вызвать метод Delete()")]
         public void DeleteClient_ShouldDeleteClient()
         {
             ClearTable();
@@ -138,7 +136,7 @@ namespace TestDAL.PostgresRepositoriesTests
             ClearTable();
         }
 
-        [Fact]
+        [Fact(DisplayName = "ѕолучение всех клиентов: должен вернуть список клиентов либо пустой список")]
         public void GetAllClients_ShouldReturnAllClients()
         {
             ClearTable();
@@ -180,7 +178,7 @@ namespace TestDAL.PostgresRepositoriesTests
             ClearTable();
         }
 
-        [Fact]
+        [Fact(DisplayName = "ќбновление клиента: должен вызвать метод Update()")]
         public void UpdateClient_ShouldUpdateExistingClient()
         {
             ClearTable();
@@ -210,7 +208,7 @@ namespace TestDAL.PostgresRepositoriesTests
             ClearTable();
         }
 
-        [Fact]
+        [Fact(DisplayName = "ѕолучение клиента по логину: должен вернуть клиента либо null при его отсутствии")]
         public void GetClientByLogin_ReturnsClientOrNULL()
         {
             ClearTable();

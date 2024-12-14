@@ -44,7 +44,8 @@ namespace course_work.Views
             {
                 string statusDescription = HelperUI.GetOrderStatusDescription(currOrders[i].Status);
                 string paymentStatusDescription = HelperUI.GetPaymentStatusDescription(currOrders[i].PaymentStatus);
-                Console.WriteLine($"\nЗаказ {i + 1}. (Дата: {currOrders[i].Date}, Столик: {currOrders[i].TableNumber}, Общая стоимость: {currOrders[i].TotalCost}, Статус: {statusDescription}, Статус оплаты: {paymentStatusDescription})");
+                Console.WriteLine($"\nЗаказ {i + 1}. (Дата: {currOrders[i].Date}, Столик: {currOrders[i].TableNumber}, Общая стоимость: {currOrders[i].TotalCost} \n" +
+                    $"Статус: {statusDescription}, Статус оплаты: {paymentStatusDescription})");
 
                 var dishesTable = new ConsoleTable("№", "Имя блюда", "Цена за единицу", "Количество", "Итоговая стоимость");
 

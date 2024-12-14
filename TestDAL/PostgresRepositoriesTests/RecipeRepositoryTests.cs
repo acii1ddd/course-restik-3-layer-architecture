@@ -73,7 +73,7 @@ namespace TestDAL.PostgresRepositoriesTests
             return recipe;
         }
 
-        [Fact]
+        [Fact(DisplayName = "Добавление записи рецепта: должен вызвать метод Add()")]
         public void AddRecipe()
         {
             ClearAllTables();
@@ -114,7 +114,7 @@ namespace TestDAL.PostgresRepositoriesTests
             ClearAllTables();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Получение записи рецепта по Id: должен вернуть запись рецепта либо null при ее отсутствии")]
         public void GetRecipe()
         {
             ClearAllTables();
@@ -140,7 +140,7 @@ namespace TestDAL.PostgresRepositoriesTests
             ClearAllTables();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Удаление записи рецепта: должен вызвать метод Delete()")]
         public void DeleteRecipe()
         {
             ClearAllTables();
@@ -158,7 +158,7 @@ namespace TestDAL.PostgresRepositoriesTests
             ClearAllTables();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Получение всех записей рецептов: должен вернуть список всех записей рецептов либо пустой список")]
         public void GetAllRecipes()
         {
             ClearAllTables();
@@ -188,7 +188,7 @@ namespace TestDAL.PostgresRepositoriesTests
             ClearAllTables();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Обновление записи рецепта: должен вызвать метод Update()")]
         public void UpdateRecipe()
         {
             ClearAllTables();

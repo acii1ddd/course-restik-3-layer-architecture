@@ -4,6 +4,7 @@ using BLL.ServiceInterfaces.LogicInterfaces;
 using BLL.ServiceInterfaces.ValidatorInterfaces;
 using DAL.Entities;
 using DAL.Interfaces;
+using System.Collections.Generic;
 
 namespace BLL.Services.LogicServices
 {
@@ -17,7 +18,9 @@ namespace BLL.Services.LogicServices
         private readonly IPaymentRepository _paymentRepository;
         private readonly IMapper _mapper;
 
-        public WaiterService(IOrderRepository orderRepository, IOrderItemRepository orderItemRepository, IDishRepository dishRepository, IClientRepository clientRepository, IWaiterValidatorService waiterValidatorService, IPaymentRepository paymentRepository, IMapper mapper)
+        private readonly IArchiveHandler _archiveHandler;
+
+        public WaiterService(IOrderRepository orderRepository, IOrderItemRepository orderItemRepository, IDishRepository dishRepository, IClientRepository clientRepository, IWaiterValidatorService waiterValidatorService, IPaymentRepository paymentRepository, IMapper mapper, IArchiveHandler archiveHandler)
         {
             _orderRepository = orderRepository;
             _orderItemRepository = orderItemRepository;
@@ -26,6 +29,7 @@ namespace BLL.Services.LogicServices
             _waiterValidatorService = waiterValidatorService;
             _paymentRepository = paymentRepository;
             _mapper = mapper;
+            _archiveHandler = archiveHandler;
         }
 
         public List<OrderDTO> GetAlailableOrdersToDelivery()
@@ -86,15 +90,20 @@ namespace BLL.Services.LogicServices
         public void AcceptPaymentForOrder(int selectedOrder, PaymentMethod paymentMethod)
         {
             // получаем OrderDTO по номеру заказа, если он валиден
-
             var orderToAcceptPaymentDto = _waiterValidatorService.GetValidOrderByNumberToAcceptPayment(selectedOrder);
-            var orderToAcceptPayment = _mapper.Map<Order>(orderToAcceptPaymentDto);
 
-            orderToAcceptPayment.PaymentStatus = PaymentStatus.Paid;
-            orderToAcceptPayment.Status = OrderStatus.Completed;
+            orderToAcceptPaymentDto.PaymentStatus = PaymentStatus.Paid;
+            orderToAcceptPaymentDto.Status = OrderStatus.Completed;
+
+            var orderToAcceptPayment = _mapper.Map<Order>(orderToAcceptPaymentDto);
             _orderRepository.Update(orderToAcceptPayment);
 
-            _orderRepository.Delete(orderToAcceptPayment); // срабатывает триггер в бд - прокидывает в архивную таблицу
+            // архивирование данных (с окончательными статусами)
+            var orders = new List<Order> { _mapper.Map<Order>(orderToAcceptPaymentDto) };
+            _archiveHandler.ArchiveOrderWithItems(
+                _mapper.Map<OrderDTO>(GetOrdersWithItems(orders)[0])
+            );
+            //_orderRepository.Delete(orderToAcceptPayment); // срабатывает триггер в бд - прокидывает в архивную таблицу
 
             Payment payment = new Payment 
             {
@@ -102,6 +111,7 @@ namespace BLL.Services.LogicServices
                 PaymentMethod = paymentMethod,
                 PaymentDate = DateTime.Now, // оплата происходит сейчас
             };
+
             _paymentRepository.Add(payment);
         }
 

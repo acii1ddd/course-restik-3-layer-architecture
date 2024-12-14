@@ -1,5 +1,6 @@
 ﻿using DAL.Entities;
 using DAL.Interfaces;
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace DAL.MongoRepositories
@@ -8,20 +9,23 @@ namespace DAL.MongoRepositories
     {
         private readonly IMongoCollection<OrderItem> _collection;
         private readonly IMongoDatabase _database;
+        private readonly IMongoCollection<BsonDocument> _counterCollection;
 
         public OrderItemRepository(string connectionString, string databaseName, string collectionName)
         {
             var client = new MongoClient(connectionString);
             _database = client.GetDatabase(databaseName);
             _collection = _database.GetCollection<OrderItem>(collectionName);
+
+            _counterCollection = _database.GetCollection<BsonDocument>("counter");
+            // Инициализируем счетчик, если он отсутствует
+            InitializeCounter("counter");
         }
 
         public void Add(OrderItem entity)
         {
-            if (entity.Id == 0) // Если Id не задан
-            {
-                entity.Id = GenerateNextId();
-            }
+            entity.Id = GenerateNextId();
+   
             entity.TotalDishPrice = entity.CurrDishPrice * entity.Quantity;
             _collection.InsertOne(entity);
 
@@ -70,12 +74,31 @@ namespace DAL.MongoRepositories
 
         private int GenerateNextId()
         {
-            var lastOrderItem = _collection
-                .Find(FilterDefinition<OrderItem>.Empty)
-                .SortByDescending(d => d.Id) // самый большой Id (последний)
-                .FirstOrDefault();
+            var filter = Builders<BsonDocument>.Filter.Eq("_id", "OrderItemId");
+            var update = Builders<BsonDocument>.Update.Inc("sequence_value", 1);
+            var options = new FindOneAndUpdateOptions<BsonDocument>
+            {
+                ReturnDocument = ReturnDocument.After,
+                IsUpsert = true
+            };
 
-            return lastOrderItem == null ? 1 : lastOrderItem.Id + 1;
+            var result = _counterCollection.FindOneAndUpdate(filter, update, options);
+            return result["sequence_value"].AsInt32;
+        }
+
+        private void InitializeCounter(string counterCollectionName)
+        {
+            var filter = Builders<BsonDocument>.Filter.Eq("_id", "OrderItemId");
+            var exists = _counterCollection.Find(filter).FirstOrDefault();
+            if (exists == null)
+            {
+                var document = new BsonDocument
+                {
+                    { "_id", "OrderItemId" },
+                    { "sequence_value", 0 }
+                };
+                _counterCollection.InsertOne(document);
+            }
         }
 
         private void RecalculateOrderTotalCost(int orderId)

@@ -63,7 +63,7 @@ namespace TestDAL.PostgresRepositoriesTests
 
 
         // добавление worrker без узказания даты (current date в базе данных)
-        [Fact]
+        [Fact(DisplayName = "Добавление сотрудника: должен вызвать метод Add()")]
         public void AddWorker_ShouldAddWorker()
         {
             ClearTable();
@@ -119,7 +119,7 @@ namespace TestDAL.PostgresRepositoriesTests
             ClearTableRoles();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Получение сотрудника по Id: должен вернуть сотрудника либо null при ее отсутствии")]
         public void GetWorker_ShouldReturnWorker()
         {
             // очистка табллицы clients
@@ -157,7 +157,7 @@ namespace TestDAL.PostgresRepositoriesTests
             ClearTableRoles();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Удаление сотрудника: должен вызвать метод Delete()")]
         public void DeleteWorker_ShouldDeleteWorker()
         {
             ClearTable();
@@ -183,7 +183,7 @@ namespace TestDAL.PostgresRepositoriesTests
             ClearTableRoles();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Получение всех сотрудников: должен вернуть список всех сотрудников либо пустой список")]
         public void GetAllWorkers_ShouldReturnAllWorkers()
         {
             ClearTable();
@@ -222,7 +222,7 @@ namespace TestDAL.PostgresRepositoriesTests
             ClearTableRoles();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Обновление сотрудника: должен вызвать метод Update()")]
         public void UpdateWorker_ShouldUpdateExistingWorker()
         {
             ClearTable();
@@ -260,7 +260,7 @@ namespace TestDAL.PostgresRepositoriesTests
             ClearTableRoles();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Получение сотрудника по логину: должен вернуть сотрудника либо null при ее отсутствии")]
         public void GetWorkerByLogin_ReturnsWorkerOrNULL()
         {
             ClearTable();

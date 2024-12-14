@@ -31,7 +31,7 @@ namespace TestDAL.PostgresRepositoriesTests
             }
         }
 
-        [Fact]
+        [Fact(DisplayName = "Добавление ингредиента: должен вызвать метод Add()")]
         public void AddIngredientToDb() // пока без async
         {
             ClearTable();
@@ -80,7 +80,7 @@ namespace TestDAL.PostgresRepositoriesTests
             ClearTable();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Получение ингредиента по Id: должен вернуть ингредиент либо null при его отсутствии")]
         public void GetIngredient()
         {
             ClearTable();
@@ -114,7 +114,7 @@ namespace TestDAL.PostgresRepositoriesTests
             ClearTable();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Удаление ингредиента: должен вызвать метод Delete()")]
         public void DeleteIngredient()
         {
             ClearTable();
@@ -137,7 +137,7 @@ namespace TestDAL.PostgresRepositoriesTests
             ClearTable();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Получение всех ингредиентов: должен вернуть список ингредиентов либо пустой список")]
         public void GetAllIngredients()
         {
             ClearTable();
@@ -184,7 +184,7 @@ namespace TestDAL.PostgresRepositoriesTests
             ClearTable();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Обновление ингредиента: должен вызвать метод Update()")]
         public void UpdateIngredient()
         {
             ClearTable();

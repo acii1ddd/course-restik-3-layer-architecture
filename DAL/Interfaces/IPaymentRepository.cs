@@ -2,7 +2,7 @@
 
 namespace DAL.Interfaces
 {
-    public interface IPaymentRepository:IRepository<Payment>
+    public interface IPaymentRepository : IRepository<Payment>
     {
 
     }

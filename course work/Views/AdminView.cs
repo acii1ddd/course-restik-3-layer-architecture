@@ -25,7 +25,7 @@ namespace course_work.Views
 
         internal void ManageStatisticsMenu()
         {
-            Console.WriteLine("\nУправление меню:");
+            Console.WriteLine("\nПросмотр статистики:");
             Console.WriteLine("1. Просмотр заказов за период");
             Console.WriteLine("2. Просмотр самых популярных блюд");
             Console.WriteLine("0. Назад");
@@ -85,7 +85,7 @@ namespace course_work.Views
             {
                 string orderStatusDescription = HelperUI.GetOrderStatusDescription(orders[i].Status);
                 string paymentStatusDescription = HelperUI.GetPaymentStatusDescription(orders[i].PaymentStatus);
-                Console.WriteLine($"\nЗаказ {i + 1}. Клиент: {orders[i].Client.Name}, Столик: {orders[i].TableNumber}, Общая стоимость: {orders[i].TotalCost}, Статус: {orderStatusDescription}, Статус оплаты: {paymentStatusDescription} \nДата: {orders[i].Date.ToString("dd.MM.yyyy HH.mm")}");
+                Console.WriteLine($"\nЗаказ {i + 1}. Клиент: {orders[i].Client.Name}, Столик: {orders[i].TableNumber}, Общая стоимость: {orders[i].TotalCost} \nСтатус: {orderStatusDescription}, Статус оплаты: {paymentStatusDescription}, Дата: {orders[i].Date.ToString("dd.MM.yyyy HH.mm")}");
 
                 var dishesTable = new ConsoleTable("№", "Имя блюда", "Количество", "Цена");
 

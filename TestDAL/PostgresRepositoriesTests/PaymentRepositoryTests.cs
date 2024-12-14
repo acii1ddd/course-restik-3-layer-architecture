@@ -8,7 +8,7 @@ namespace TestDAL.PostgresRepositoriesTests
     public class PaymentRepositoryTests
     {
         private readonly IPaymentRepository _paymentRepository;
-        private readonly IOrderRepository _orderRepository;
+        private readonly IOrderArchiveRepository _orderArchiveRepository;
         private readonly IClientRepository _clientRepository;
         private readonly string _testPostgresConnectionString;
 
@@ -16,7 +16,7 @@ namespace TestDAL.PostgresRepositoriesTests
         {
             var serviceProvider = Configuration.ConfigureTestPostgres(out _testPostgresConnectionString);
             _paymentRepository = serviceProvider.GetService<IPaymentRepository>() ?? throw new InvalidOperationException("Строка подключения для TestPostgres не найдена в конфигурации.");
-            _orderRepository = serviceProvider.GetService<IOrderRepository>() ?? throw new InvalidOperationException("Строка подключения для TestPostgres не найдена в конфигурации.");
+            _orderArchiveRepository = serviceProvider.GetService<IOrderArchiveRepository>() ?? throw new InvalidOperationException("Строка подключения для TestPostgres не найдена в конфигурации.");
             _clientRepository = serviceProvider.GetService<IClientRepository>() ?? throw new InvalidOperationException("Строка подключения для TestPostgres не найдена в конфигурации.");
         }
 
@@ -58,7 +58,7 @@ namespace TestDAL.PostgresRepositoriesTests
                 ClientId = client.Id,
                 TableNumber = 4
             };
-            _orderRepository.Add(order);
+            _orderArchiveRepository.Add(order);
 
             var payment = new Payment
             {
@@ -69,7 +69,7 @@ namespace TestDAL.PostgresRepositoriesTests
             return payment;
         }
 
-        [Fact]
+        [Fact(DisplayName = "Добавление платежа: должен вызвать метод Add()")]
         public void AddPaymentToDb()
         {
             ClearAllTables();
@@ -109,7 +109,7 @@ namespace TestDAL.PostgresRepositoriesTests
             ClearAllTables();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Получение платежа по Id: должен вернуть платеж либо null при его отсутствии")]
         public void GetPayment()
         {
             ClearAllTables();
@@ -134,7 +134,7 @@ namespace TestDAL.PostgresRepositoriesTests
             ClearAllTables();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Удаление платежа: должен вызвать метод Delete()")]
         public void DeletePayment()
         {
             ClearAllTables();
@@ -152,7 +152,7 @@ namespace TestDAL.PostgresRepositoriesTests
             ClearAllTables();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Получение всех платежей: должен вернуть список платежей либо пустой список")]
         public void GetAllPayments()
         {
             ClearAllTables();
@@ -182,7 +182,7 @@ namespace TestDAL.PostgresRepositoriesTests
             ClearAllTables();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Обновление платежа: должен вызвать метод Update()")]
         public void UpdatePayment()
         {
             ClearAllTables();
@@ -195,7 +195,7 @@ namespace TestDAL.PostgresRepositoriesTests
                 ClientId = 1,
                 TableNumber = 4
             };
-            _orderRepository.Add(order);
+            _orderArchiveRepository.Add(order);
 
             payment.PaymentDate = DateTime.Parse("2024-11-20");
             payment.PaymentMethod = PaymentMethod.Cash;

@@ -17,7 +17,7 @@ namespace course_work
                 .Build();
             var services = new ServiceCollection();
 
-            var type = config["DbType:Type"]; // postgres / mongo
+            var type = config["DbType:Type"]; // postgres/mongo
 
             if (type == "postgres")
             {

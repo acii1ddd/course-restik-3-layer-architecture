@@ -16,7 +16,7 @@ namespace course_work.Views
             Console.WriteLine("Сделайте выбор:");
         }
 
-        internal void PrintOrders(List<OrderDTO> orders)
+        internal void PrintOrders(List<OrderDTO> orders, string message)
         {
             if (orders == null || orders.Count() == 0)
             {
@@ -24,7 +24,7 @@ namespace course_work.Views
                 return;
             }
 
-            Console.WriteLine("\nВсе заказы:");
+            Console.WriteLine($"\n{message}");
             for (int i = 0; i < orders.Count; i++)
             {
                 Console.WriteLine($"\nЗаказ {i + 1}. (Дата заказа: {orders[i].Date})");

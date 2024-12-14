@@ -25,12 +25,12 @@ namespace course_work.Handlers
             {
                 _cookView.ShowMenu(); // Menu с функционалом
 
-                // выбор клиента
+                // выбор повара
                 int choice = Validator.GetValidInteger("Введите корректное значение:");
                 switch (choice)
                 {
                     case 1:
-                        ShowAvailableOrders();
+                        ShowAvailableOrders("Заказы для приготовления: ");
                         break;
                     case 2:
                         TakeAnOrder(worker);
@@ -59,10 +59,10 @@ namespace course_work.Handlers
             }
         }
 
-        private bool ShowAvailableOrders()
+        private bool ShowAvailableOrders(string message)
         {
             var orders = _cookService.GetAlailableOrders();
-            _cookView.PrintOrders(orders);
+            _cookView.PrintOrders(orders, message);
             //HelperUI.PrintOrders(orders, "\nВсе заказы: ", "Заказов пока еще нету.");
             return orders.Count() == 0 ? false : true;
         }
@@ -73,7 +73,7 @@ namespace course_work.Handlers
             do
             {
                 // заказов нету
-                if (ShowAvailableOrders())
+                if (ShowAvailableOrders("Заказы для приготовления: "))
                 {
                     int selectedOrder = HelperUI.GetSelectedNumberWithMessage("Введите номер заказа, который вы хотите приготовить: ");
                     try
@@ -100,7 +100,7 @@ namespace course_work.Handlers
             try
             {
                 var currentOrders = _cookService.GetCurrentOrders(worker);
-                _cookView.PrintOrders(currentOrders);
+                _cookView.PrintOrders(currentOrders, "Текущие заказы: ");
                 //HelperUI.PrintOrders(currentOrders, "\nВсе заказы: ", "Заказов пока еще нету.");
                 return currentOrders.Count() == 0 ? false : true;
             }

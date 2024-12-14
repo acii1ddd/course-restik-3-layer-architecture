@@ -1,5 +1,6 @@
 ﻿using DAL.Entities;
 using DAL.Interfaces;
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace DAL.MongoRepositories
@@ -7,20 +8,22 @@ namespace DAL.MongoRepositories
     internal class OrderRepository : IOrderRepository
     {
         private readonly IMongoCollection<Order> _collection;
+        private readonly IMongoCollection<BsonDocument> _counterCollection;
 
         public OrderRepository(string connectionString, string databaseName, string collectionName)
         {
             var client = new MongoClient(connectionString);
             var database = client.GetDatabase(databaseName);
             _collection = database.GetCollection<Order>(collectionName);
+
+            _counterCollection = database.GetCollection<BsonDocument>("counter");
+            // Инициализируем счетчик, если он отсутствует
+            InitializeCounter("counter");
         }
 
         public void Add(Order entity)
         {
-            if (entity.Id == 0) // Если Id не задан
-            {
-                entity.Id = GenerateNextId();
-            }
+            entity.Id = GenerateNextId(); // Получаем уникальный Id
             _collection.InsertOne(entity);
         }
 
@@ -71,12 +74,31 @@ namespace DAL.MongoRepositories
 
         private int GenerateNextId()
         {
-            var lastOrder = _collection
-                .Find(FilterDefinition<Order>.Empty)
-                .SortByDescending(d => d.Id) // самый большой Id (последний)
-                .FirstOrDefault();
+            var filter = Builders<BsonDocument>.Filter.Eq("_id", "OrderId");
+            var update = Builders<BsonDocument>.Update.Inc("sequence_value", 1);
+            var options = new FindOneAndUpdateOptions<BsonDocument>
+            {
+                ReturnDocument = ReturnDocument.After,
+                IsUpsert = true
+            };
 
-            return lastOrder == null ? 1 : lastOrder.Id + 1;
+            var result = _counterCollection.FindOneAndUpdate(filter, update, options);
+            return result["sequence_value"].AsInt32;
+        }
+
+        private void InitializeCounter(string counterCollectionName)
+        {
+            var filter = Builders<BsonDocument>.Filter.Eq("_id", "OrderId");
+            var exists = _counterCollection.Find(filter).FirstOrDefault();
+            if (exists == null)
+            {
+                var document = new BsonDocument
+                {
+                    { "_id", "OrderId" },
+                    { "sequence_value", 0 }
+                };
+                _counterCollection.InsertOne(document);
+            }
         }
 
         private DateTime ConvertToLocal(DateTime utcDate)

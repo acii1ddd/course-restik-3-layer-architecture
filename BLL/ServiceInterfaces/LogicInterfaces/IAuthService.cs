@@ -7,8 +7,8 @@ namespace BLL.ServiceInterfaces.LogicInterfaces
     {
         IUserDTO? AuthUser(string login, string password);
 
-        WorkerDTO? CheckWorker(string login, string password);
+        //WorkerDTO? CheckWorker(string login, string password);
 
-        ClientDTO? CheckClient(string login, string password);
+        //ClientDTO? CheckClient(string login, string password);
     }
 }
